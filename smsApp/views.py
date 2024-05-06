@@ -6,9 +6,9 @@ from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status
 from rest_framework.permissions import AllowAny
-from .helper import sendSMSData
+from .helper import *
 from kwani_api.utils import get_current_user
-from companies.models import CompanySetting
+
 
 from .serializers import SmsRequestSerializer, UserSmsSerializer, CompanyFreeSmsAwardSerializer
 from .models import *
@@ -105,9 +105,25 @@ class SendSMSApiView(APIView):
         
         if not recipients:
             return Response({"status":"failed","message":"Missing sms recipients"}, status=status.HTTP_200_OK)
+        
         if not message:
             return Response({"status":"failed","message":"Missing message"}, status=status.HTTP_200_OK)
+       
         recipients = recipients.split(',')
+        
+        balance = get_account_sms_balance(self.request.user.user_branch.company)
+
+        sms_cost = 50
+        general_setting   = CompanySetting.objects.filter(company_setting=self.request.user.user_branch.company,setting_key='sms_unit_cost').first()
+        if general_setting:
+             sms_cost = general_setting.setting_value
+        
+        if balance == 0:
+            return Response({"message":"Insufficient balance"}, status=status.HTTP_200_OK)
+
+        if (len(recipients) * float(sms_cost)) > balance:
+            return Response({"message":"Insufficient balance to send all messages"}, status=status.HTTP_200_OK) 
+        
         sendSMSData(recipients, message,self.request.user,send_type)
         return Response({"status":"success","message":"successful message"}, status=status.HTTP_200_OK)
     

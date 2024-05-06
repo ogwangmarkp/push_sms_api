@@ -48,10 +48,10 @@ class UserView(viewsets.ModelViewSet):
             staff_field={"user":saved_user,"staff_number":staff_number,"company":company}
             Staff.objects.create(**staff_field)
             
-            user_group = UserGroup.objects.get(id=group_id) 
+            ''' user_group = UserGroup.objects.get(id=group_id) 
             if user_group:
                 user_assigned_group_field={"group":user_group,"assigned_by":self.request.user,"user":saved_user,"is_active":True}
-                UserAssignedGroup.objects.create(**user_assigned_group_field)
+                UserAssignedGroup.objects.create(**user_assigned_group_field) '''
 
 
     def perform_update(self, serializer):
@@ -60,8 +60,8 @@ class UserView(viewsets.ModelViewSet):
         staff_number = self.request.data.get('staff_number')
 
         saved_user = serializer.save(user_branch_id=branchid,user_added_by=self.request.user.id)
-        user_group  = UserGroup.objects.get(id=self.request.data.get('group'))
-        user_assigned_group = UserAssignedGroup.objects.filter(user=saved_user).first()
+        # user_group  = UserGroup.objects.get(id=self.request.data.get('group'))
+       # user_assigned_group = UserAssignedGroup.objects.filter(user=saved_user).first()
         
         staff = Staff.objects.filter(user=saved_user).first()
         if staff:
@@ -73,14 +73,14 @@ class UserView(viewsets.ModelViewSet):
             saved_user.set_password(password)
             saved_user.save()
         
-        if user_assigned_group:
+        ''' if user_assigned_group:
             user_assigned_group.user        = saved_user
             user_assigned_group.group       = user_group
             user_assigned_group.assigned_by = self.request.user
             user_assigned_group.save()
         else:
             user_assigned_group_field={"group":user_group,"assigned_by":self.request.user,"user":saved_user,"is_active":True}
-            UserAssignedGroup.objects.create(**user_assigned_group_field)
+            UserAssignedGroup.objects.create(**user_assigned_group_field) '''
 
 class ContactsView(viewsets.ModelViewSet):
     serializer_class = UserSerializer
