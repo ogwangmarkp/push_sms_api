@@ -42,11 +42,11 @@ def send_sms(smsData):
         contact      = User.objects.filter(phone_number = phone_number).first()
 
         if contact is None:
-            contact = User.objects.create(first_name=phone_number,user_branch=user.user_branch,gender='O',phone_number=phone_number, user_type='Contact',user_added_by=contact)
+            contact = User.objects.create(username=phone_number,first_name=phone_number,user_branch=user.user_branch,gender='O',phone_number=phone_number, user_type='Contact',user_added_by=contact)
         
         # send sms
         sms_tran = UserSms.objects.create(sms_cost=sms_cost, message=message, provider=config('ACTIVE_SMS_PROVIDER'),sending_mode=sending_mode, telephone= phone_number, status='pending', company=user.user_branch.company, sent_by=user,recieved_by=contact)
-
+       
         if config('ACTIVE_SMS_PROVIDER') == 'EGO':
             data = {'method':'SendSms',
                     'userdata':{

@@ -106,11 +106,11 @@ AUTH_USER_MODEL = 'users.User'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql',
-        'NAME': config('QB_DB_NAME', default=''),
-        'USER': config('QB_DB_USERNAME', default=''),
-        'PASSWORD': config('QB_DB_PASSWORD', default=''),
-        'HOST': config('QB_DB_HOSTNAME', default=''),
-        'PORT': config('QB_DB_PORT', default=5432, cast=int)
+        'NAME': config('HT_DB_NAME', default=''),
+        'USER': config('HT_DB_USERNAME', default=''),
+        'PASSWORD': config('HT_DB_PASSWORD', default=''),
+        'HOST': config('HT_DB_HOSTNAME', default=''),
+        'PORT': config('HT_DB_PORT', default=5432, cast=int)
     }
 }
 

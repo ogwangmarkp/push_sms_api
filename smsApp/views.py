@@ -8,7 +8,7 @@ from rest_framework import status
 from rest_framework.permissions import AllowAny
 from .helper import *
 from kwani_api.utils import get_current_user
-
+import threading
 
 from .serializers import SmsRequestSerializer, UserSmsSerializer, CompanyFreeSmsAwardSerializer
 from .models import *
@@ -123,8 +123,8 @@ class SendSMSApiView(APIView):
 
         if (len(recipients) * float(sms_cost)) > balance:
             return Response({"message":"Insufficient balance to send all messages"}, status=status.HTTP_200_OK) 
-        
-        sendSMSData(recipients, message,self.request.user,send_type)
+        send_bulk_sms = threading.Thread(target=sendSMSData, args=(recipients,message,self.request.user,send_type,))
+        send_bulk_sms.start()
         return Response({"status":"success","message":"successful message"}, status=status.HTTP_200_OK)
     
 
