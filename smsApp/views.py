@@ -116,7 +116,7 @@ class SendSMSApiView(APIView):
         sms_cost = 50
         general_setting   = CompanySetting.objects.filter(company_setting=self.request.user.user_branch.company,setting_key='sms_unit_cost').first()
         if general_setting:
-             sms_cost = general_setting.setting_value
+             sms_cost = float(general_setting.setting_value)
         
         if balance == 0:
             return Response({"message":"Insufficient balance"}, status=status.HTTP_200_OK)

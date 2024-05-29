@@ -1,6 +1,7 @@
 from rest_framework import serializers
 from .models import *
 from companies.models import CompanySetting
+from companies.serializers import CompanySerializer
 
 class SmsRequestSerializer(serializers.ModelSerializer):
     id = serializers.CharField(read_only=True)
@@ -11,6 +12,7 @@ class SmsRequestSerializer(serializers.ModelSerializer):
     approved_by_name  = serializers.SerializerMethodField()
     company           = serializers.CharField(read_only=True)
     sms_count         = serializers.SerializerMethodField()
+    company_details   = serializers.SerializerMethodField(read_only=True)
 
     def get_requested_by_name(self, obj):
         if obj.requested_by:
@@ -23,12 +25,16 @@ class SmsRequestSerializer(serializers.ModelSerializer):
         return ""
 
     def get_sms_count(self, obj):
-        if obj.sms_cost > 0:
+        if float(obj.sms_cost) > 0:
             if obj.status == 'approved':
-                return round(obj.approved_amount/obj.sms_cost)
+                return round(float(obj.approved_amount)/float(obj.sms_cost))
             else:
-                return round(obj.requested_amount/obj.sms_cost)
+                return round(float(obj.requested_amount)/float(obj.sms_cost))
         return 0
+    
+    def get_company_details(self, obj):
+        return CompanySerializer(obj.company).data
+       
     
     class Meta:
         model = SmsRequest
@@ -42,8 +48,8 @@ class CompanyFreeSmsAwardSerializer(serializers.ModelSerializer):
     sms_count      = serializers.SerializerMethodField()
 
     def get_sms_count(self, obj):
-        if obj.sms_cost > 0:
-            return round(obj.amount/obj.sms_cost)
+        if float(obj.sms_cost) > 0:
+            return round(float(obj.amount)/float(obj.sms_cost))
         return 0
   
     class Meta:

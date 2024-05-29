@@ -42,46 +42,51 @@ def send_sms(smsData):
         contact      = User.objects.filter(phone_number = phone_number).first()
 
         if contact is None:
-            contact = User.objects.create(username=phone_number,first_name=phone_number,user_branch=user.user_branch,gender='O',phone_number=phone_number, user_type='Contact',user_added_by=contact)
+            contact = User.objects.create(username=phone_number,first_name=phone_number,user_branch=user.user_branch,gender='O',phone_number=phone_number, user_type='Contact',user_added_by=user.id)
         
         # send sms
         sms_tran = UserSms.objects.create(sms_cost=sms_cost, message=message, provider=config('ACTIVE_SMS_PROVIDER'),sending_mode=sending_mode, telephone= phone_number, status='pending', company=user.user_branch.company, sent_by=user,recieved_by=contact)
-       
-        if config('ACTIVE_SMS_PROVIDER') == 'EGO':
-            data = {'method':'SendSms',
-                    'userdata':{
-                        'username':config('EGO_USER_NAME'),
-                        'password' :config('EGO_PASSWORD')
-                    },
-                    'msgdata': [ {'number':phone_number, 'message': message, 'senderid':'Egosms' } ]}
-            send_sms = requests.post(config('EGO_SMS_URL'), json = data)
-          
-            if send_sms.status_code == 200 or send_sms.status_code == '200':
-                send_resp = json.loads(send_sms.text)
-                print("send_resp",send_resp)
-
-                if send_resp['Status'] == 'OK':
-                    sms_tran.status = 'sent'
-                    sms_tran.save()
+        if sms_tran:
+            if config('ACTIVE_SMS_PROVIDER') == 'EGO':
+                data = {'method':'SendSms',
+                        'userdata':{
+                            'username':config('EGO_USER_NAME'),
+                            'password' :config('EGO_PASSWORD')
+                        },
+                        'msgdata': [ {'number':phone_number, 'message': message, 'senderid':'Egosms' } ]}
+                send_sms = requests.post(config('EGO_SMS_URL'), json = data)
+            
+                if send_sms.status_code == 200 or send_sms.status_code == '200':
+                    send_resp = json.loads(send_sms.text)
+                    if send_resp['Status'] == 'OK':
+                        sms_tran.status = 'sent'
+                        sms_tran.save()
+                    else:
+                        sms_tran.status = 'failed'
+                        sms_tran.save()
                 else:
                     sms_tran.status = 'failed'
                     sms_tran.save()
-            else:
-                sms_tran.status = 'failed'
-                sms_tran.save()
-          
+
+            
 
 def get_account_sms_balance(company):
     purchases = SmsRequest.objects.filter(status='approved', company=company).aggregate(total_amount = Sum('approved_amount') )
     sms_transactions = UserSms.objects.filter(company=company, status='sent').aggregate(total_sms_cost = Sum('sms_cost') )
+    sms_awards = CompanyFreeSmsAward.objects.filter(company=company, status='approved').aggregate(total_awards = Sum('amount') )
+   
+    total_awards = 0
     total_payments  = 0
     total_sms_transactions = 0
     
+    if sms_awards:
+        total_awards = sms_awards['total_awards'] if sms_awards['total_awards'] != None else 0
+    
     if purchases:
         total_payments = purchases['total_amount'] if purchases['total_amount'] != None else 0
-
+    
     if sms_transactions:
         total_sms_transactions = sms_transactions['total_sms_cost'] if sms_transactions['total_sms_cost'] != None else 0
 
-    balance = float(total_payments) - float(total_sms_transactions) 
+    balance = (float(total_awards) + float(total_payments)) - float(total_sms_transactions) 
     return balance if balance > 0 else 0
