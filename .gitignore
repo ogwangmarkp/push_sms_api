@@ -5,7 +5,7 @@
 # virtual environment
 venv/**
 env/**
-
+envx/**
 # migrations
 **/migrations/*
 **/migrations/
