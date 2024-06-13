@@ -257,7 +257,7 @@ class DocumentApiView(APIView):
     permission_classes = [AllowAny, IsPostOnly]
     def post(self, request, format=None):
         files = request.FILES.getlist('files')
-        pytesseract.pytesseract.tesseract_cmd = r'C:\Program Files\Tesseract-OCR\tesseract.exe'
+        #pytesseract.pytesseract.tesseract_cmd = r'C:\Program Files\Tesseract-OCR\tesseract.exe'
         directory_path = settings.FILE_UPLOAD_DIR + f'/files/'
         output_path2 = directory_path + 'munites.pdf'
         '''image_paths = []
