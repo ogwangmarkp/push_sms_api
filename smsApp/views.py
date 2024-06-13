@@ -260,7 +260,7 @@ class DocumentApiView(APIView):
         pytesseract.pytesseract.tesseract_cmd = r'C:\Program Files\Tesseract-OCR\tesseract.exe'
         directory_path = settings.FILE_UPLOAD_DIR + f'/files/'
         output_path2 = directory_path + 'munites.pdf'
-        image_paths = []
+        '''image_paths = []
 
         if not os.path.exists(directory_path):
                 os.makedirs(directory_path, exist_ok=True)
@@ -275,7 +275,7 @@ class DocumentApiView(APIView):
         
         if len(image_paths) > 0:
             output_path = directory_path
-            image_to_string(image_paths,output_path,self.request.user) 
+            image_to_string(image_paths,output_path,self.request.user) '''
         insert_html_at_position(output_path2,'to discuss, the meeting was called off with a prayer (Godfrey)', 'hello world',self.request.user)
         
         return Response({"status":"success","message":"successful message"}, status=status.HTTP_200_OK)

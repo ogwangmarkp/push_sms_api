@@ -228,16 +228,16 @@ def insert_html_at_position(pdf_path,search_text, html_content,user):
         # concatenate the greetings into one string.
         text = " ... ".join([t for t in greetings])
         page.insert_htmlbox(rect, text)  # place into the rectangle
-        html_annotation = page.insert_html_box({
+        '''html_annotation = page.insert_htmlbox({
             "x": 90,
             "y": 300,
             "width": 200,
             "height": 500,
             "html": html_content
-        })
+        })'''
         
         # Add the HTML annotation to the page
-        page.add_annotation(html_annotation) 
+        #page.add_annotation(html_annotation) 
 
     # make subset fonts
     #doc.subset_fonts()
