@@ -71,3 +71,24 @@ class UserSms(models.Model):
     class Meta:
         db_table = 'public\".\"user_sms'
 
+
+class FileObject(models.Model):
+    FILE_TyPE = (('image-to-text', 'image-to-text'),
+                 ('text-to-doc', 'text-to-doc')
+                 )
+    title = models.CharField(max_length=255)
+    description = models.CharField(max_length=255)
+    url_path = models.TextField()
+    attachment_type = models.CharField(
+        max_length=255, choices=FILE_TyPE, default='pending')
+    sign_status = models.CharField(
+        max_length=255, default='pending')
+    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name='doc_user')
+    date_added  = models.DateTimeField(default=timezone.now)
+    tran_doc_id = models.TextField(blank=True,null=True)
+    sign_doc_id = models.TextField(blank=True,null=True)
+    signed_doc_url = models.TextField(blank=True,null=True)
+    is_signing  = models.BooleanField(default=False)
+    
+    class Meta:
+        db_table = 'public\".\"file_object' 

@@ -13,7 +13,6 @@ def custom_jwt_response_handler(token, user=None, request=None):
         user_session = UserSession.objects.filter(user=user, session_token = token).first()
         company_id   = user.user_branch.company.id
         branch_id    = user.user_branch.id
-        
         if not user_session:
             UserSession.objects.create(user=user, session_token = token, data={"company_id":company_id, "branch_id":branch_id})
         else:

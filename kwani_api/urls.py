@@ -36,7 +36,9 @@ router.register(r'user-groups',systemrights_views.UserGroupView, basename='user-
 router.register(r'branches', companies_views.CompanyBranchView, basename='branches')
 router.register(r'sms-requests', sms_app_views.SmsRequestView, basename='sms-requests')
 router.register(r'sms-list', sms_app_views.SMSListView, basename='send-sms')
-router.register(r'company-free-sms-award', sms_app_views.CompanyFreeSmsAwardView, basename='send-sms')
+router.register(r'file-list', sms_app_views.FileListView, basename='file-list')
+
+router.register(r'company-free-sms-award', sms_app_views.CompanyFreeSmsAwardView, basename='company-free-sms-award')
 router.register(r'assets', asset_views.AssetView, basename='assets')
 router.register(r'asset-trackers', asset_views.AssetTrackerView, basename='asset-trackers')
 router.register(r'tracked-assets', asset_views.TrackedAssetView, basename='tracked-assets')
@@ -64,6 +66,10 @@ urlpatterns = [
     path('api/switch-company/', companies_views.SwitchCompany.as_view()),
     path('api/update_gps_location/',asset_views.UpdateLocationsView.as_view()),
     path('api/send-sms/', sms_app_views.SendSMSApiView.as_view()), 
+    path('api/send-bulk-sms/', sms_app_views.SendBulkSMSApiView.as_view()), 
+    path('api/sms-dashboard/', sms_app_views.smsDashBoardView.as_view()), 
+    path('api/document/', sms_app_views.DocumentApiView.as_view()), 
+    path('api/download-file/', sms_app_views.DownloadApiView.as_view()), 
 
 ]
 

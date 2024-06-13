@@ -42,7 +42,7 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'rest_framework',
     'rest_framework.authtoken',
-    'rest_framework_jwt',
+    'rest_framework_simplejwt',
     'django_filters',
     'corsheaders',
     'companies',
@@ -51,7 +51,8 @@ INSTALLED_APPS = [
     'curriculum',
     'assets',
     'smsApp',
-    'emailApp'
+    'emailApp',
+    'orders'
 ]
 
 MIDDLEWARE = [
@@ -121,7 +122,7 @@ REST_FRAMEWORK = {
     'DEFAULT_FILTER_BACKENDS': ('django_filters.rest_framework.DjangoFilterBackend' ,),
     'DEFAULT_AUTHENTICATION_CLASSES': (
         #'rest_framework_jwt.authentication.JSONWebTokenAuthentication',   ---> Disable this when using CustomJSONWebTokenAuthentication
-        'users.helper.CustomJSONWebTokenAuthentication',
+        'users.helper.CustomJWTAuthentication',
         'rest_framework.authentication.SessionAuthentication',
     ),
     'DEFAULT_PERMISSION_CLASSES': (
@@ -130,13 +131,6 @@ REST_FRAMEWORK = {
     )
 } 
 
-# set JWT key expiry
-JWT_AUTH = {
-    'JWT_RESPONSE_PAYLOAD_HANDLER':'kwani_api.utils.custom_jwt_response_handler',
-    'JWT_AUTH_HEADER_PREFIX': 'Bearer',
-    # Expire original token after 2 days
-    'JWT_EXPIRATION_DELTA': datetime.timedelta(days=2),
-}
 
 
 # Password validation
@@ -206,3 +200,5 @@ EMAIL_PORT = 587
 EMAIL_USE_TLS = True
 EMAIL_HOST_USER = 'your_email@gmail.com'
 EMAIL_HOST_PASSWORD = 'your_password'
+
+FILE_UPLOAD_DIR = os.path.join(BASE_DIR, 'uploaded-files')

@@ -77,3 +77,9 @@ class UserSmsSerializer(serializers.ModelSerializer):
     class Meta:
         model = UserSms
         fields = '__all__'
+
+class FileObjectSerializer(serializers.ModelSerializer):
+    
+    class Meta:
+        model = FileObject
+        fields = '__all__' 

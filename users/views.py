@@ -8,14 +8,16 @@ from rest_framework.views import APIView
 from users.models import * 
 from users.helper import * 
 from companies.models import * 
-from rest_framework_jwt.views import ObtainJSONWebToken
+from rest_framework_simplejwt.tokens import RefreshToken
+#from rest_framework_jwt.views import ObtainJSONWebToken
 from datetime import datetime 
 from rest_framework.response import Response
 from rest_framework import status
-from kwani_api.utils import get_current_user,get_logged_in_user_key,generate_random_string
+from kwani_api.utils import get_current_user,get_logged_in_user_key,generate_random_string,custom_jwt_response_handler
 from django.db.models import Q
 from rest_framework.permissions import AllowAny
 from .permissions import *
+import threading
 
 class UserView(viewsets.ModelViewSet):
     serializer_class = UserSerializer
@@ -107,10 +109,20 @@ class ContactsView(viewsets.ModelViewSet):
         branchid     = self.request.data.get('branch_id')
         serializer.save(user_branch_id=branchid,user_added_by=self.request.user.id)
        
-class RestAPIJWT(ObtainJSONWebToken):
-    def post(self, request, *args, **kwargs):
-        response = super().post(request, *args, **kwargs)
-        return response
+class RestAPIJWT(APIView):
+    permission_classes = [AllowAny, IsPostOnly]
+    def post(self, request):
+        username = request.data.get('username')
+        password = request.data.get('password')
+        user = authenticate(username=username, password=password)
+        if user:
+            # Generating refresh and access tokens manually
+            refresh = RefreshToken.for_user(user)
+            access_token = str(refresh.access_token)
+            payload      = custom_jwt_response_handler(access_token,user,request)
+            return Response(payload, status=status.HTTP_200_OK)
+        else:
+            return Response({'message':'Invalid username or password'}, status=status.HTTP_401_UNAUTHORIZED)
     
 class LogOutUserView(APIView):
     permission_classes = (IsAuthenticated,)
@@ -168,3 +180,19 @@ class ObtainAPITokenView(APIView):
             return Response({'message':'success','access_token': str(access_token)}, status=status.HTTP_200_OK)
         else:
             return Response({'message':'Invalid API key'}, status=status.HTTP_401_UNAUTHORIZED)
+
+class BulkContactsUpdateApiView(APIView):
+    
+    def post(self, request, format=None):
+        recipients = self.request.data.get('recipients', None)  
+        
+        if not recipients:
+            return Response({"status":"failed","message":"No contacts"}, status=status.HTTP_200_OK)
+        
+        if len(recipients):
+            return Response({"status":"failed","message":"contacts"}, status=status.HTTP_200_OK)
+        
+        send_bulk_sms = threading.Thread(target=bulk_contact_update, args=(recipients,))
+        send_bulk_sms.start()
+        return Response({"status":"success","message":"successful message"}, status=status.HTTP_200_OK)
+    
