@@ -202,7 +202,7 @@ def search_pdf_and_get_rect_dimensions(pdf_path, search_text):
     return rect_dimensions
 
 
-def insert_html_at_position(pdf_path,search_text, html_content,user):
+def insert_html_at_position(pdf_path,pdf_out_put_path,search_text, html_content,user):
     doc = fitz.open(pdf_path)
     rect_dimensions = search_pdf_and_get_rect_dimensions(pdf_path, search_text)
     if rect_dimensions['x1']:
@@ -241,12 +241,12 @@ def insert_html_at_position(pdf_path,search_text, html_content,user):
 
     # make subset fonts
     #doc.subset_fonts()
-    doc.save(pdf_path, incremental=False)
+    doc.save(pdf_out_put_path)
     doc.close()
     FileObject.objects.create(**{
-        "title": pdf_path,
-        "description": pdf_path,
-        "url_path": pdf_path,
+        "title": pdf_out_put_path,
+        "description": pdf_out_put_path,
+        "url_path": pdf_out_put_path,
         "user":user,
         "attachment_type": 'image-to-text'
     })
