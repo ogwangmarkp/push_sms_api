@@ -212,36 +212,14 @@ def insert_html_at_position(directory_path,pdf_path,pdf_out_put_path,search_text
     if rect_dimensions['x1']:
         page_index = rect_dimensions['page_index']
         page = doc[page_index]
-        greetings = (
-            "Hello, World!",  # english
-            "Hallo, Welt!",  # german
-            "سلام دنیا!",  # persian
-            "வணக்கம், உலகம்!",  # tamil
-            "สวัสดีชาวโลก!",  # thai
-            "Привіт Світ!",  # ukrainian
-            "שלום עולם!",  # hebrew
-            "ওহে বিশ্ব!",  # bengali
-            "你好世界！",  # chinese
-            "こんにちは世界！",  # japanese
-            "안녕하세요, 월드!",  # korean
-            "नमस्कार, विश्व !",  # sanskrit
-            "हैलो वर्ल्ड!",  # hindi
-        )
         rect = (round(rect_dimensions['x1']),round(rect_dimensions['y1']) + 5, rect_dimensions['x2'] - rect_dimensions['x1'], 500)
         # Create an HTML annotation (box) at the specified position
-        # concatenate the greetings into one string.
-        #text = " ... ".join([t for t in greetings])
-        page.insert_htmlbox(rect, '<p>Hello how are you, <br/> cool stufff')  # place into the rectangle
-        '''html_annotation = page.insert_htmlbox({
-            "x": 90,
-            "y": 300,
-            "width": 200,
-            "height": 500,
-            "html": html_content
-        })'''
+      
+        html_annotation = page.insert_htmlbox(rect, '<p>Hello how are you, <br/> cool stufff')  # place into the rectangle
+        
         
         # Add the HTML annotation to the page
-        #page.add_annotation(html_annotation) 
+        page.add_annotation(html_annotation) 
 
     # make subset fonts
     #doc.subset_fonts()
