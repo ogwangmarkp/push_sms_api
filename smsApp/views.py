@@ -276,8 +276,7 @@ class DocumentApiView(APIView):
                     image_paths.append(uploaded_file.name)
         
         if len(image_paths) > 0:
-            output_path = directory_path
-            image_to_string(directory_path,image_paths,output_path,self.request.user) 
+            image_to_string(directory_path,image_paths,self.request.user) 
         #insert_html_at_position(directory_path,output_path2,output_path3,'The Chairperson thanked members for coming', 'hello world',self.request.user)
         
         return Response({"status":"success","message":"successful message"}, status=status.HTTP_200_OK)

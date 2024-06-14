@@ -225,16 +225,16 @@ def insert_html_at_position(directory_path,pdf_path,pdf_out_put_path,search_text
         "attachment_type": 'image-to-text'
     })
 
-def image_to_string(image_paths,output_path,user):
-    doc = Document()
+def image_to_string(directory_path,image_paths,user):
+    
     if len(image_paths) > 0:
-        text1 = pytesseract.image_to_string(image_paths[0], lang='eng', config='--psm 6')
+        doc = Document()
+        text1 = pytesseract.image_to_string(directory_path + image_paths[0], lang='eng', config='--psm 6')
         text1 = re.sub(r'\s+', '', text1)
         file_name = f'{text1[:20]}.docx'
-        output_path = output_path + file_name
         for image_path in image_paths:
             # Perform OCR with specified language and custom configurations
-            text = pytesseract.image_to_string(image_path, lang='eng', config='--psm 6')
+            text = pytesseract.image_to_string(directory_path + image_path, lang='eng', config='--psm 6')
             # Create a new Word document
             # Add formatted text
             paragraph = doc.add_paragraph()
@@ -249,16 +249,16 @@ def image_to_string(image_paths,output_path,user):
                 # Add newline after each line
                 paragraph.add_run('\n')  
             try:
-                os.remove(image_path)
+                os.remove(directory_path + image_path)
             except FileNotFoundError:
-                print(f"File {image_path} not found.")
+                print(f"File {directory_path + image_path} not found.")
 
-    # Save the document
-    doc.save(output_path)
-    FileObject.objects.create(**{
-        "title": file_name,
-        "description": file_name,
-        "url_path": output_path,
-        "user":user,
-        "attachment_type": 'image-to-text'
-    })
+        # Save the document
+        doc.save(directory_path + file_name)
+        FileObject.objects.create(**{
+            "title": file_name,
+            "description": file_name,
+            "url_path": directory_path + file_name,
+            "user":user,
+            "attachment_type": 'image-to-text'
+        })
