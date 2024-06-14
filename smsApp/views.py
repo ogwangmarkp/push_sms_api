@@ -278,7 +278,7 @@ class DocumentApiView(APIView):
         if len(image_paths) > 0:
             output_path = directory_path
             image_to_string(image_paths,output_path,self.request.user) '''
-        insert_html_at_position(directory_path,output_path2,output_path3,'agreed that it shall be shared on the group so that when they give you a fine there should be no complain', 'hello world',self.request.user)
+        insert_html_at_position(directory_path,output_path2,output_path3,'they give you a fine there should be no complain', 'hello world',self.request.user)
         
         return Response({"status":"success","message":"successful message"}, status=status.HTTP_200_OK)
     
