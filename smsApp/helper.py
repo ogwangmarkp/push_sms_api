@@ -231,7 +231,7 @@ def insert_html_at_position(directory_path,pdf_path,pdf_out_put_path,search_text
         # Create an HTML annotation (box) at the specified position
         # concatenate the greetings into one string.
         text = " ... ".join([t for t in greetings])
-        page.insert_htmlbox(rect, text)  # place into the rectangle
+        page.insert_htmlbox(rect, "hello testing my world")  # place into the rectangle
         '''html_annotation = page.insert_htmlbox({
             "x": 90,
             "y": 300,
