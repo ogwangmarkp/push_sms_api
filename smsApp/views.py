@@ -262,7 +262,7 @@ class DocumentApiView(APIView):
         output_path2 = 'munites.pdf'
         output_path3 = 'munites_final.pdf'
         
-        '''image_paths = []
+        image_paths = []
 
         if not os.path.exists(directory_path):
                 os.makedirs(directory_path, exist_ok=True)
@@ -273,12 +273,12 @@ class DocumentApiView(APIView):
             with open(file_path, 'wb+') as destination:
                 for chunk in uploaded_file.chunks():
                     destination.write(chunk)
-                    image_paths.append(file_path)
+                    image_paths.append(uploaded_file.name)
         
         if len(image_paths) > 0:
             output_path = directory_path
-            image_to_string(image_paths,output_path,self.request.user) '''
-        insert_html_at_position(directory_path,output_path2,output_path3,'The Chairperson thanked members for coming', 'hello world',self.request.user)
+            image_to_string(directory_path,image_paths,output_path,self.request.user) 
+        #insert_html_at_position(directory_path,output_path2,output_path3,'The Chairperson thanked members for coming', 'hello world',self.request.user)
         
         return Response({"status":"success","message":"successful message"}, status=status.HTTP_200_OK)
     

@@ -214,12 +214,7 @@ def insert_html_at_position(directory_path,pdf_path,pdf_out_put_path,search_text
         page = doc[page_index]
         rect = (round(rect_dimensions['x1']),round(rect_dimensions['y1']) + 5, rect_dimensions['x2'] - rect_dimensions['x1'], 500)
         # Create an HTML annotation (box) at the specified position
-      
         page.insert_htmlbox(rect, '<p>Hello how are you, <br/> cool stufff')  # place into the rectangle
-        annot = page.add_rect_annot(rect)
-        page.add_rect_annot(rect)
-    # make subset fonts
-    #doc.subset_fonts()
     doc.save(file_path2)
     doc.close()
     FileObject.objects.create(**{
