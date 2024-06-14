@@ -227,7 +227,7 @@ def insert_html_at_position(directory_path,pdf_path,pdf_out_put_path,search_text
             "नमस्कार, विश्व !",  # sanskrit
             "हैलो वर्ल्ड!",  # hindi
         )
-        rect = (round(rect_dimensions['x1']),round(rect_dimensions['y1']) + 5, rect_dimensions['x2'] - rect_dimensions['x1'], 500)
+        rect = (round(rect_dimensions['x1']),round(rect_dimensions['y1']) + 15, rect_dimensions['x2'] - rect_dimensions['x1'], 500)
         # Create an HTML annotation (box) at the specified position
         # concatenate the greetings into one string.
         text = " ... ".join([t for t in greetings])
