@@ -204,9 +204,10 @@ def search_pdf_and_get_rect_dimensions(pdf_path, search_text):
 
 
 def insert_html_at_position(directory_path,pdf_path,pdf_out_put_path,search_text, html_content,user):
-    doc = fitz.open(pdf_path)
-    file_path = directory_path + 'munites.pdf'
-    file_path2 = directory_path + 'munites_final.pdf'
+   
+    file_path = directory_path + pdf_path
+    file_path2 = directory_path + pdf_out_put_path
+    doc = fitz.open(file_path)
     rect_dimensions = search_pdf_and_get_rect_dimensions(file_path, search_text)
     if rect_dimensions['x1']:
         page_index = rect_dimensions['page_index']

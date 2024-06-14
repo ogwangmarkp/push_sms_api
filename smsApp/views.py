@@ -260,7 +260,7 @@ class DocumentApiView(APIView):
         #pytesseract.pytesseract.tesseract_cmd = r'C:\Program Files\Tesseract-OCR\tesseract.exe'
         directory_path = settings.FILE_UPLOAD_DIR + f'/files/'
         output_path2 = 'munites.pdf'
-        output_path3 = 'munites_final1.pdf'
+        output_path3 = 'munites_final.pdf'
         
         '''image_paths = []
 
