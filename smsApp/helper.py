@@ -218,8 +218,6 @@ def insert_html_at_position(directory_path,pdf_path,pdf_out_put_path,search_text
         page.insert_htmlbox(rect, '<p>Hello how are you, <br/> cool stufff')  # place into the rectangle
         annot = page.add_rect_annot(rect)
         page.add_rect_annot(rect)
-        # Set the color of the rectangle annotation to yellow (RGB: 255, 255, 0)
-        annot.set_color([1, 1, 0])
     # make subset fonts
     #doc.subset_fonts()
     doc.save(file_path2)
