@@ -230,18 +230,19 @@ def insert_html_at_position(directory_path,pdf_path,pdf_out_put_path,search_text
         rect = (round(rect_dimensions['x1']),round(rect_dimensions['y1']) + 10, rect_dimensions['x2'] - rect_dimensions['x1'], 500)
         # Create an HTML annotation (box) at the specified position
         # concatenate the greetings into one string.
-        text = " ... ".join([t for t in greetings])
-        page.insert_htmlbox(rect, text)  # place into the rectangle
-        '''html_annotation = page.insert_htmlbox({
-            "x": 90,
-            "y": 300,
-            "width": 200,
+        #text = " ... ".join([t for t in greetings])
+        html_content = "<h3>Signature section</h3><p>signature content</p>"
+        #page.insert_htmlbox(rect, text)  # place into the rectangle
+        html_annotation = page.insert_htmlbox({
+            "x": round(rect_dimensions['x1']),
+            "y": round(rect_dimensions['y1']) + 20,
+            "width": rect_dimensions['x2'] - rect_dimensions['x1'],
             "height": 500,
             "html": html_content
-        })'''
+        })
         
         # Add the HTML annotation to the page
-        #page.add_annotation(html_annotation) 
+        page.add_annotation(html_annotation) 
 
     # make subset fonts
     #doc.subset_fonts()
