@@ -202,3 +202,8 @@ EMAIL_HOST_USER = 'your_email@gmail.com'
 EMAIL_HOST_PASSWORD = 'your_password'
 
 FILE_UPLOAD_DIR = os.path.join(BASE_DIR, 'uploaded-files')
+
+SIMPLE_JWT = {
+    'ACCESS_TOKEN_LIFETIME': datetime.timedelta(days=2),  # Example: Access token expires in 15 minutes
+    # Other settings...
+}

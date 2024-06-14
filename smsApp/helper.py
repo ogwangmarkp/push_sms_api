@@ -205,8 +205,8 @@ def search_pdf_and_get_rect_dimensions(pdf_path, search_text):
 
 def insert_html_at_position(directory_path,pdf_path,pdf_out_put_path,search_text, html_content,user):
    
-    file_path = directory_path + pdf_path
-    file_path2 = directory_path + pdf_out_put_path
+    file_path = directory_path + 'munites.pdf'
+    file_path2 = directory_path + 'munites_final.pdf'
     doc = fitz.open(file_path)
     rect_dimensions = search_pdf_and_get_rect_dimensions(file_path, search_text)
     if rect_dimensions['x1']:
@@ -227,11 +227,11 @@ def insert_html_at_position(directory_path,pdf_path,pdf_out_put_path,search_text
             "नमस्कार, विश्व !",  # sanskrit
             "हैलो वर्ल्ड!",  # hindi
         )
-        rect = (round(rect_dimensions['x1'], 4),round(rect_dimensions['y1'], 4), round(rect_dimensions['x2'], 4) - round(rect_dimensions['x1'], 4), 500)
+        rect = (round(rect_dimensions['x1']),round(rect_dimensions['y1']) + 10, rect_dimensions['x2'] - rect_dimensions['x1'], 500)
         # Create an HTML annotation (box) at the specified position
         # concatenate the greetings into one string.
         text = " ... ".join([t for t in greetings])
-        page.insert_htmlbox(rect, "hello testing my world")  # place into the rectangle
+        page.insert_htmlbox(rect, text)  # place into the rectangle
         '''html_annotation = page.insert_htmlbox({
             "x": 90,
             "y": 300,
