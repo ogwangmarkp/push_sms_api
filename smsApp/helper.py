@@ -17,6 +17,7 @@ import pytesseract
 from docx import Document
 from docx.shared import Pt
 import os
+import re
 
 def sendSMSData(phone_numbers, message, user,send_type):
         message  = message.encode().decode('UTF-8')
@@ -202,9 +203,11 @@ def search_pdf_and_get_rect_dimensions(pdf_path, search_text):
     return rect_dimensions
 
 
-def insert_html_at_position(pdf_path,pdf_out_put_path,search_text, html_content,user):
+def insert_html_at_position(directory_path,pdf_path,pdf_out_put_path,search_text, html_content,user):
     doc = fitz.open(pdf_path)
-    rect_dimensions = search_pdf_and_get_rect_dimensions(pdf_path, search_text)
+    file_path = directory_path + 'munites.pdf'
+    file_path2 = directory_path + 'munites_final.pdf'
+    rect_dimensions = search_pdf_and_get_rect_dimensions(file_path, search_text)
     if rect_dimensions['x1']:
         page_index = rect_dimensions['page_index']
         page = doc[page_index]
@@ -241,12 +244,12 @@ def insert_html_at_position(pdf_path,pdf_out_put_path,search_text, html_content,
 
     # make subset fonts
     #doc.subset_fonts()
-    doc.save(pdf_out_put_path)
+    doc.save(file_path2)
     doc.close()
     FileObject.objects.create(**{
         "title": pdf_out_put_path,
-        "description": pdf_out_put_path,
-        "url_path": pdf_out_put_path,
+        "description": file_path2,
+        "url_path": file_path2,
         "user":user,
         "attachment_type": 'image-to-text'
     })
@@ -255,6 +258,7 @@ def image_to_string(image_paths,output_path,user):
     doc = Document()
     if len(image_paths) > 0:
         text1 = pytesseract.image_to_string(image_paths[0], lang='eng', config='--psm 6')
+        text1 = re.sub(r'\s+', '', text1)
         file_name = f'{text1[:20]}.docx'
         output_path = output_path + file_name
         for image_path in image_paths:
