@@ -2,6 +2,8 @@ from rest_framework import serializers
 from .models import *
 from companies.models import CompanySetting
 from companies.serializers import CompanySerializer
+from orders.models import Order
+from orders.serializers import OrderSerializer
 
 class SmsRequestSerializer(serializers.ModelSerializer):
     id = serializers.CharField(read_only=True)
@@ -13,6 +15,7 @@ class SmsRequestSerializer(serializers.ModelSerializer):
     company           = serializers.CharField(read_only=True)
     sms_count         = serializers.SerializerMethodField()
     company_details   = serializers.SerializerMethodField(read_only=True)
+    order_details     = serializers.SerializerMethodField(read_only=True)
 
     def get_requested_by_name(self, obj):
         if obj.requested_by:
@@ -35,6 +38,9 @@ class SmsRequestSerializer(serializers.ModelSerializer):
     def get_company_details(self, obj):
         return CompanySerializer(obj.company).data
        
+    def get_order_details(self, obj):
+        orders = Order.objects.filter(ext_ref_no=obj.id,trans_type='sms-top-up').order_by('id')
+        return OrderSerializer(orders,many=True).data
     
     class Meta:
         model = SmsRequest

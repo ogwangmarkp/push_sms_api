@@ -172,7 +172,7 @@ def update_existing_request_orders(company_id):
         requests = SmsRequest.objects.filter(company__id = company_id).order_by('id')
         if requests:  
             for request in requests:
-                order = Order.objects.filter(ext_ref_no=request,trans_type='sms-top-up').order_by('id')
+                order = Order.objects.filter(ext_ref_no=request.id,trans_type='sms-top-up').order_by('id')
                 if not order:
                     saved_order = Order.objects.create(order_no=generate_invoice_no(request.company.id),ext_ref_no=request.id,company=request.company,trans_type='sms-top-up', customer=request.requested_by)
             if saved_order:
