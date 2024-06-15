@@ -57,6 +57,7 @@ urlpatterns = [
     path('api/token-auth/', user_views.RestAPIJWT.as_view()), 
     path('api/obtain-token/', user_views.ObtainAPITokenView.as_view()), 
     path('api/logout/', user_views.LogOutUserView.as_view()), 
+    path('api/bulk-contact-updates/', user_views.BulkContactsUpdateApiView.as_view()), 
     path('api/system-rights/', systemrights_views.SystemRightView.as_view()),
     path('api/company-type-components/',systemrights_views.CompanyTypeComponentsView.as_view()),
     path('api/company-components/', systemrights_views.CompanyComponentView.as_view()),
@@ -70,6 +71,6 @@ urlpatterns = [
     path('api/sms-dashboard/', sms_app_views.smsDashBoardView.as_view()), 
     path('api/document/', sms_app_views.DocumentApiView.as_view()), 
     path('api/download-file/', sms_app_views.DownloadApiView.as_view()), 
-
+    
 ]
 
