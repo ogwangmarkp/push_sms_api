@@ -17,6 +17,7 @@ class OrderSerializer(serializers.ModelSerializer):
     added_by_name  = serializers.CharField(source='added_by.first_name',read_only=True)
     order_totals = serializers.SerializerMethodField()
     ref_no = serializers.SerializerMethodField()
+    order_payments = serializers.SerializerMethodField()
 
     def get_order_totals(self, obj):
         order_totals = 0
