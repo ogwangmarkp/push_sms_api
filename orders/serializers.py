@@ -5,6 +5,11 @@ from companies.models import CompanySetting
 from companies.serializers import CompanySerializer
 from orders.models import Order, OrderPayment
 
+class OrderPaymentSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = OrderPayment
+        fields = '__all__'
+
 class OrderSerializer(serializers.ModelSerializer):
     company_name = serializers.CharField(source='company.name',read_only=True)
     added_by = serializers.CharField(read_only=True)
@@ -15,11 +20,7 @@ class OrderSerializer(serializers.ModelSerializer):
 
     def get_order_totals(self, obj):
         order_totals = 0
-        payments0 = OrderPayment.objects.all()
         payments = OrderPayment.objects.filter(order__id=obj.id)
-        print("order__id",obj.id)
-        print("payments",payments)
-        print("paymentso",payments0)
         if payments:
             for payment in payments:
                     if payment.pay_type == 'normal':
@@ -34,7 +35,11 @@ class OrderSerializer(serializers.ModelSerializer):
         if payment:
             ref_no = payment.ref_no
         return ref_no
-
+    
+    def get_order_payments(self, obj):
+        payments = OrderPayment.objects.filter(order__id=obj.id)
+        return OrderPaymentSerializer(payments,many=True).data()
+    
     class Meta:
         model = Order
         fields = '__all__'
