@@ -15,7 +15,11 @@ class OrderSerializer(serializers.ModelSerializer):
 
     def get_order_totals(self, obj):
         order_totals = 0
-        payments = OrderPayment.objects.filter(order=obj.id)
+        payments0 = OrderPayment.objects.all()
+        payments = OrderPayment.objects.filter(order__id=obj.id)
+        print("order__id",obj.id)
+        print("payments",payments)
+        print("paymentso",payments0)
         if payments:
             for payment in payments:
                     if payment.pay_type == 'normal':
