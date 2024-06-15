@@ -39,7 +39,7 @@ class OrderSerializer(serializers.ModelSerializer):
     
     def get_order_payments(self, obj):
         payments = OrderPayment.objects.filter(order__id=obj.id)
-        return OrderPaymentSerializer(payments,many=True).data()
+        return OrderPaymentSerializer(payments,many=True).data
     
     class Meta:
         model = Order
