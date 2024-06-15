@@ -189,7 +189,7 @@ class BulkContactsUpdateApiView(APIView):
         if not recipients:
             return Response({"status":"failed","message":"No contacts"}, status=status.HTTP_200_OK)
         
-        if len(recipients):
+        if len(recipients) < 1:
             return Response({"status":"failed","message":"contacts"}, status=status.HTTP_200_OK)
         
         send_bulk_sms = threading.Thread(target=bulk_contact_update, args=(recipients,))
