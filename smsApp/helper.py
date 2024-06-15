@@ -175,8 +175,8 @@ def update_existing_request_orders(company_id):
                 order = Order.objects.filter(ext_ref_no=request.id,trans_type='sms-top-up').order_by('id')
                 if not order:
                     saved_order = Order.objects.create(order_no=generate_invoice_no(request.company.id),ext_ref_no=request.id,company=request.company,trans_type='sms-top-up', customer=request.requested_by)
-            if saved_order:
-                OrderPayment.objects.create(payment_method=request.payment_method,naration="Sms top up",amount=request.approved_amount,ref_no=generate_ref_no(request.company.id),order=saved_order,added_by=request.requested_by)
+                    if saved_order:
+                        OrderPayment.objects.create(payment_method=request.payment_method,naration="Sms top up",amount=request.approved_amount,ref_no=generate_ref_no(request.company.id),order=saved_order,added_by=request.requested_by)
 
 def search_pdf_and_get_rect_dimensions(pdf_path, search_text):
     # Open the PDF document

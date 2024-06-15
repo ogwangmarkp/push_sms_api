@@ -65,10 +65,14 @@ class SmsRequestView(viewsets.ModelViewSet):
                 order = Order.objects.create(status=saved_request.status,order_no=generate_invoice_no(saved_request.company.id),ext_ref_no=saved_request.id,company=saved_request.company,trans_type='sms-top-up', customer=saved_request.requested_by)
            
             if order:
-                order_payment = OrderPayment.objects.filter(order=order).order_by('id')
+                order_payment = OrderPayment.objects.filter(order=order).first()
                 if not order_payment:
-                    OrderPayment.objects.create(payment_method=saved_request.payment_method,naration="Sms top up",amount=saved_request.approved_amount,ref_no=generate_ref_no(saved_request.company.id),order=order,added_by=saved_request.requested_by)
-    
+                    order_payment = OrderPayment.objects.create(payment_method=saved_request.payment_method,naration="Sms top up",amount=saved_request.approved_amount,ref_no=generate_ref_no(saved_request.company.id),order=order,added_by=saved_request.requested_by)
+            
+            if order_payment:
+                order_payment.amount = saved_request.approved_amount
+                order_payment.save()
+                
 
 class CompanyFreeSmsAwardView(viewsets.ModelViewSet):
     serializer_class = CompanyFreeSmsAwardSerializer
