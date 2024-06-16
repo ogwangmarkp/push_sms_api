@@ -152,7 +152,7 @@ def generate_ref_no(company_id, prefix = None):
     now = datetime.now()
     base = f'P{now.strftime('%d%b%y')}RE'
 
-    last_reference = OrderPayment.objects.filter(company__id=company_id,ref_no__icontains=base).order_by('-id')
+    last_reference = OrderPayment.objects.filter(order__company__id=company_id,ref_no__icontains=base).order_by('-id')
     print(last_reference)
     if(len(last_reference) > 0):
         new_ref = int(last_reference[0].ref_no.replace(base,'')) + 1
