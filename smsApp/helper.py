@@ -156,7 +156,7 @@ def generate_ref_no(company_id, prefix = None):
     new_ref = 1
 
     if(len(last_reference) > 0):
-        new_ref = int(last_reference[0].order_no.replace(base,'')) + 1
+        new_ref = len(last_reference) + 1
 
     return base + pad_reference_number(new_ref,3)
 
