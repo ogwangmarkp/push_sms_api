@@ -24,7 +24,7 @@ class CompanyComponent(models.Model):
     class Meta:
         db_table = 'public\".\"company_component'
 
-# for all components / features assigned to the organisation
+# for all components / features assigned to the company
 class CompanyTypeComponent(models.Model):
     system_component = models.ForeignKey(SystemComponent, on_delete=models.CASCADE, related_name='system_comp')
     comp_company_type    =  models.ForeignKey(CompanyType, on_delete=models.CASCADE, related_name='comp_company_type')
@@ -34,24 +34,7 @@ class CompanyTypeComponent(models.Model):
     class Meta:
         db_table = 'public\".\"company_type_component'
 
-class CompanyRight(models.Model):
-    id = models.IntegerField(primary_key=True)
-    component_id =  models.CharField(max_length=255)
-    component   =  models.CharField(max_length=255)
-    desc        =  models.CharField(max_length=255)
-    type        =  models.CharField(max_length=255)
-    key         =  models.CharField(max_length=255)
-    date_added  = models.CharField(max_length=255)
-    parent      = models.CharField(max_length=255)
-    is_active   = models.CharField(max_length=255)
-    is_active   = models.CharField(max_length=255)
-    company_id      = models.CharField(max_length=255)
-    company_name    = models.CharField(max_length=255)
-    company_short_name = models.CharField(max_length=255)
-    class Meta:
-        db_table = 'public\".\"CompanyRight'
-
-# for all roles belonging to an organisation.
+# for all roles belonging to an company.
 class UserGroup(models.Model):
     name          =  models.CharField(max_length=255)
     desc          =  models.TextField(blank=True)
@@ -75,21 +58,4 @@ class RoleComponent(models.Model):
         db_table = 'public\".\"role_component'
 
 
-class CompanyRightsView(models.Model):
-    id = models.IntegerField(primary_key=True)
-    component_id =  models.CharField(max_length=255)
-    component   =  models.CharField(max_length=255)
-    desc        =  models.CharField(max_length=255)
-    type        =  models.CharField(max_length=255)
-    key         =  models.CharField(max_length=255)
-    date_added  = models.CharField(max_length=255)
-    parent      = models.CharField(max_length=255)
-    is_active   = models.CharField(max_length=255)
-    is_component_active   = models.CharField(max_length=255)
-    company_id         = models.CharField(max_length=255)
-    company_name       = models.CharField(max_length=255)
-    company_short_name = models.CharField(max_length=255)
-    class Meta:
-        managed = False
-        db_table = 'public\".\"company_rights_view'
 

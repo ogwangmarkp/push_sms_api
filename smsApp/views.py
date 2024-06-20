@@ -124,13 +124,34 @@ class SMSListView(viewsets.ModelViewSet):
         company = get_user_model().objects.get(pk=self.request.user.id)
         serializer.save(sent_by=self.request.user, company=company.company, sms_cost=company.company.sms_cost )
 
+class ContactGroupsView(viewsets.ModelViewSet):
+    serializer_class = ContactGroupSerializer
+
+    def get_queryset(self):
+        company_id = get_current_user(self.request, 'company_id', 1)
+        search = self.request.query_params.get('search')
+
+        if search:
+            return ContactGroup.objects.filter(Q(name__icontains=search) |  Q(desc__icontains=search),company__id = company_id).all().order_by('name')
+        queryset = ContactGroup.objects.filter(company__id = company_id).all().order_by('name')
+        return queryset
+        
+    def perform_create(self, serializer):
+        company_id = get_current_user(self.request, 'company_id', 1)
+        serializer.save(added_by=self.request.user, company_id=company_id)
+
+    def perform_update(self, serializer):
+        serializer.save(last_added=timezone.now())
+
 class SendSMSApiView(APIView):
     
     def post(self, request, format=None):
         recipients = self.request.data.get('recipients', None)  
         send_type  = self.request.data.get('send_type','api')         
         message    = self.request.data.get('message', None) 
-        
+        is_scheduled  = self.request.data.get('is_scheduled', False) 
+        scheduled_time = self.request.data.get('scheduled_time', False) 
+
         if not recipients:
             return Response({"status":"failed","message":"Missing sms recipients"}, status=status.HTTP_200_OK)
         
@@ -151,7 +172,7 @@ class SendSMSApiView(APIView):
 
         if (len(recipients) * float(sms_cost)) > balance:
             return Response({"message":"Insufficient balance to send all messages"}, status=status.HTTP_200_OK) 
-        send_bulk_sms = threading.Thread(target=sendSMSData, args=(recipients,message,self.request.user,send_type,))
+        send_bulk_sms = threading.Thread(target=sendSMSData, args=(recipients,message,is_scheduled,scheduled_time,self.request.user,send_type,))
         send_bulk_sms.start()
         return Response({"status":"success","message":"successful message"}, status=status.HTTP_200_OK)
     
@@ -162,7 +183,9 @@ class SendBulkSMSApiView(APIView):
         recipients = self.request.data.get('recipients', None)  
         send_type  = self.request.data.get('send_type','api')         
         message    = self.request.data.get('message', None) 
-        
+        is_scheduled  = self.request.data.get('is_scheduled', False) 
+        scheduled_time = self.request.data.get('scheduled_time', False) 
+
         if not recipients:
             return Response({"status":"failed","message":"Missing sms recipients"}, status=status.HTTP_200_OK)
         
@@ -181,9 +204,43 @@ class SendBulkSMSApiView(APIView):
 
         if (len(recipients) * float(sms_cost)) > balance:
             return Response({"message":"Insufficient balance to send all messages"}, status=status.HTTP_200_OK) 
-        send_bulk_sms = threading.Thread(target=sendBulkSMSData, args=(recipients,message,self.request.user,send_type,))
+        send_bulk_sms = threading.Thread(target=sendBulkSMSData, args=(recipients,message,is_scheduled,scheduled_time,self.request.user,send_type,))
         send_bulk_sms.start()
         return Response({"status":"success","message":"successful message"}, status=status.HTTP_200_OK)
+    
+class AssignGroupContactApiView(APIView):
+    
+    def post(self, request, format=None):
+        recipients = self.request.data.get('contacts', None)  
+        group_id = self.request.data.get('group', None) 
+        if not recipients:
+            return Response({"status":"failed","message":"No contacts"}, status=status.HTTP_200_OK)
+        
+        if len(recipients) < 1:
+            return Response({"status":"failed","message":"contacts"}, status=status.HTTP_200_OK)
+        
+        send_bulk_sms = threading.Thread(target=bulk_group_contacts_update, args=(group_id,recipients,self.request.user,))
+        send_bulk_sms.start()
+        return Response({"status":"success","message":"successful message"}, status=status.HTTP_200_OK)
+
+class ScheduledSMSCronJobView(APIView):
+    permission_classes = [AllowAny, IsPostOnly]
+    
+    def post(self, request, format=None):
+
+        send_bulk_sms = threading.Thread(target=send_schuduled_sms, args=())
+        send_bulk_sms.start()
+
+        return Response({"message":"Cron initiated successfully"})
+
+class TrashUpdateOrdersApiView(APIView):
+    permission_classes = [AllowAny, IsPostOnly]
+    
+    def post(self, request, format=None):
+        bulk_orders = threading.Thread(target=trash_update_orders, args=())
+        bulk_orders.start()
+
+        return Response({"message":"Orders updated successfully"})
     
 
 class smsDashBoardView(APIView):

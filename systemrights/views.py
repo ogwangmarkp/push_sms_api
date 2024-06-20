@@ -313,35 +313,35 @@ class CompanyRightsApiView(APIView):
     def get(self,request):
         data = []
         company_id = get_current_user(self.request, 'company_id', 1)
-        modules = CompanyRightsView.objects.filter(company_id = company_id,parent=0,is_active = True,is_component_active = True).all()
+        modules = CompanyComponent.objects.filter(company__id = company_id,system_component__parent_component=0,is_active = True,system_component__is_active = True).all()
         for module in modules:
-            children = self.get_children_components(module.component_id,company_id)
+            children = self.get_children_components(module.system_component.id,company_id)
             data.append(
-                        {"id":module.id, "name":module.component,
-                        "key":module.key,
-                        "desc":module.desc,"children":children,
-                        "parent_component":module.parent,"type":module.type})
+                        {"id":module.system_component.id, "name":module.system_component.component,
+                        "key":module.system_component.key,
+                        "desc":module.system_component.component_desc,"children":children,
+                        "parent_component":module.system_component.parent_component,"type":module.system_component.type})
         return Response(data) 
 
     def get_children_components(self,parent_id,company_id):
         data = []
-        modules = CompanyRightsView.objects.filter(company_id = company_id,parent=parent_id,is_active = True,is_component_active = True).all()
+        modules = CompanyComponent.objects.filter(company__id = company_id,system_component__parent_component=parent_id,is_active = True,system_component__is_active = True).all()
         if(len(modules) > 0):
             for module in modules:
-                children = self.get_children_components(module.component_id,company_id)
+                children = self.get_children_components(module.system_component.id,company_id)
                 if(len(children) > 0):
-                    children2 = self.get_children_components(module.component_id,company_id)
+                    children2 = self.get_children_components(module.system_component.id,company_id)
                     data.append(
-                        {"id":module.id, "name":module.component,
-                         "key":module.key,
-                        "desc":module.desc,"children":children2,
-                        "parent_component":module.parent,"type":module.type})
+                        {"id":module.system_component.id, "name":module.system_component.component,
+                         "key":module.system_component.key,
+                        "desc":module.system_component.component_desc,"children":children2,
+                        "parent_component":module.system_component.parent_component,"type":module.system_component.type})
                 if(len(children) < 1):
                     data.append(
-                        {"id":module.id, "name":module.component,
-                         "key":module.key,
-                        "desc":module.desc,"children":[],
-                        "parent_component":module.parent,"type":module.type})
+                        {"id":module.system_component.id, "name":module.system_component.component,
+                         "key":module.system_component.key,
+                        "desc":module.system_component.component_desc,"children":[],
+                        "parent_component":module.system_component.parent_component,"type":module.system_component.type})
         return data
 
 class GroupRightsView(APIView):

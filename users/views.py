@@ -8,6 +8,7 @@ from rest_framework.views import APIView
 from users.models import * 
 from users.helper import * 
 from companies.models import * 
+from smsApp.models import ContactAssignedGroup
 from rest_framework_simplejwt.tokens import RefreshToken
 #from rest_framework_jwt.views import ObtainJSONWebToken
 from datetime import datetime 
@@ -26,9 +27,9 @@ class UserView(viewsets.ModelViewSet):
         company_id = get_current_user(self.request, 'company_id', 1)
         staffid    = self.request.query_params.get('staffid')
         if staffid:
-            queryset = User.objects.filter(user_branch__id=staffid).order_by('first_name')
+            queryset = User.objects.filter(user_branch__id=staffid,user_type='Staff').order_by('first_name')
         else:
-            queryset = User.objects.filter(user_branch__company__id = company_id).all().order_by('first_name')
+            queryset = User.objects.filter(user_branch__company__id = company_id,user_type='Staff').all().order_by('first_name')
         return queryset
         
     def perform_create(self, serializer):
@@ -62,8 +63,8 @@ class UserView(viewsets.ModelViewSet):
         staff_number = self.request.data.get('staff_number')
 
         saved_user = serializer.save(user_branch_id=branchid,user_added_by=self.request.user.id)
-        # user_group  = UserGroup.objects.get(id=self.request.data.get('group'))
-       # user_assigned_group = UserAssignedGroup.objects.filter(user=saved_user).first()
+        user_group  = UserGroup.objects.get(id=self.request.data.get('group'))
+        user_assigned_group = UserAssignedGroup.objects.filter(user=saved_user).first()
         
         staff = Staff.objects.filter(user=saved_user).first()
         if staff:
@@ -75,30 +76,43 @@ class UserView(viewsets.ModelViewSet):
             saved_user.set_password(password)
             saved_user.save()
         
-        ''' if user_assigned_group:
+        if user_assigned_group:
             user_assigned_group.user        = saved_user
             user_assigned_group.group       = user_group
             user_assigned_group.assigned_by = self.request.user
             user_assigned_group.save()
         else:
             user_assigned_group_field={"group":user_group,"assigned_by":self.request.user,"user":saved_user,"is_active":True}
-            UserAssignedGroup.objects.create(**user_assigned_group_field) '''
+            UserAssignedGroup.objects.create(**user_assigned_group_field) 
 
 class ContactsView(viewsets.ModelViewSet):
     serializer_class = UserSerializer
 
     def get_queryset(self):
         company_id = get_current_user(self.request, 'company_id', 1)
-        search = self.request.query_params.get('search')
-        phone_number = self.request.query_params.get('phone_number')
+        search = self.request.query_params.get('search',None)
+        phone_number = self.request.query_params.get('phone_number',None)
+        group_id = self.request.query_params.get('group',None)
+        group_list = self.request.query_params.get('group_list',None)
         
+        filter_query = {"user_branch__company__id":company_id}
+        
+        if group_list:
+            user_ids = list(ContactAssignedGroup.objects.filter(contact_group__in=group_list.split(',')).values_list("contact__id",flat=True))
+            filter_query['id__in'] = user_ids
+
+        if group_id:
+            user_ids = list(ContactAssignedGroup.objects.filter(contact_group__id=group_id).values_list("contact__id",flat=True))
+            filter_query['id__in'] = user_ids
+
         if phone_number:
-            return User.objects.filter(phone_number=phone_number,user_branch__company__id = company_id).all().order_by('first_name')
-        
+            filter_query['phone_number'] = phone_number
+
         if search:
-            return User.objects.filter(Q(first_name__icontains=search) |  Q(last_name__icontains=search) | Q(phone_number__icontains=search),user_branch__company__id = company_id).all().order_by('first_name')
-        queryset = User.objects.filter(user_branch__company__id = company_id).all().order_by('first_name')
-        return queryset
+            return User.objects.filter(Q(first_name__icontains=search) |  Q(last_name__icontains=search) | Q(phone_number__icontains=search),**filter_query).order_by('first_name')
+        else:
+            return User.objects.filter(**filter_query).order_by('first_name')
+
         
     def perform_create(self, serializer):
         branch_id = get_current_user(self.request, 'branch_id', 1) 
@@ -108,7 +122,8 @@ class ContactsView(viewsets.ModelViewSet):
     def perform_update(self, serializer):
         branchid     = self.request.data.get('branch_id')
         serializer.save(user_branch_id=branchid,user_added_by=self.request.user.id)
-       
+
+
 class RestAPIJWT(APIView):
     permission_classes = [AllowAny, IsPostOnly]
     def post(self, request):
@@ -195,4 +210,4 @@ class BulkContactsUpdateApiView(APIView):
         send_bulk_sms = threading.Thread(target=bulk_contact_update, args=(recipients,))
         send_bulk_sms.start()
         return Response({"status":"success","message":"successful message"}, status=status.HTTP_200_OK)
-    
+

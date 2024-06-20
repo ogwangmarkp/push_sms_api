@@ -84,6 +84,19 @@ class UserSmsSerializer(serializers.ModelSerializer):
         model = UserSms
         fields = '__all__'
 
+class ContactGroupSerializer(serializers.ModelSerializer):
+    id = serializers.CharField(read_only=True)
+    date_added = serializers.CharField(read_only=True)
+    last_updated = serializers.CharField(read_only=True)
+    added_by  = serializers.CharField(read_only=True)
+    company = serializers.CharField(read_only=True)
+   
+    class Meta:
+        model = ContactGroup
+        fields = '__all__'
+
+
+
 class FileObjectSerializer(serializers.ModelSerializer):
     
     class Meta:
