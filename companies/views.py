@@ -80,20 +80,25 @@ class GeneralSettingsView(APIView):
         return Response(settings)
     
     def post(self, request, format=None):
-            company_id    = get_current_user(self.request, 'company_id', None)
-            settings_data = [
-                {"setting_key":"sms_unit_cost","setting_value":request.data.get('sms_unit_cost')}
-            ]
-            for data in settings_data:
-                general_setting   = CompanySetting.objects.filter(company_setting__id=company_id,setting_key=data["setting_key"]).first()
-                if general_setting:
-                    general_setting.setting_key=data["setting_key"]
-                    general_setting.setting_added_by=self.request.user.id
-                    general_setting.setting_value = data["setting_value"]
-                    general_setting.save()
-                else:
-                    CompanySetting.objects.create(setting_key=data["setting_key"],setting_value=data["setting_value"],company_setting=Company.objects.get(pk=company_id),setting_added_by=self.request.user.id)
-            
+            company_id = request.data.get('company_id',None)
+            if company_id:
+                settings_data = [
+                    {"setting_key":"sms_unit_cost","setting_value":request.data.get('sms_unit_cost')}
+                ]
+
+                print("setting reached",request.data.get('sms_unit_cost'))
+                print("request.data",request.data)
+                for data in settings_data:
+                    general_setting   = CompanySetting.objects.filter(company_setting__id=company_id,setting_key=data["setting_key"]).first()
+                    if general_setting:
+                        general_setting.setting_key=data["setting_key"]
+                        general_setting.setting_added_by=self.request.user.id
+                        general_setting.setting_value = data["setting_value"]
+                        print("general_setting data",general_setting)
+                        general_setting.save()
+                    else:
+                        CompanySetting.objects.create(setting_key=data["setting_key"],setting_value=data["setting_value"],company_setting=Company.objects.get(pk=company_id),setting_added_by=self.request.user.id)
+                
             return Response({"message":"Success"})
       
 class SwitchCompany(APIView):
