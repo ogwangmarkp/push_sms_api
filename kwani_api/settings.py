@@ -52,7 +52,8 @@ INSTALLED_APPS = [
     'assets',
     'smsApp',
     'emailApp',
-    'orders'
+    'orders',
+    'monitoring'
 ]
 
 MIDDLEWARE = [

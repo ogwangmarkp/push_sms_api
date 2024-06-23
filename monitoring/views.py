@@ -9,6 +9,68 @@ from kwani_api.utils import get_current_user
 from .models import *
 from .serializers import *
 
+
+class UnitTypesView(viewsets.ModelViewSet):
+    serializer_class = UnitTypeSerializer
+    queryset = UnitType.objects.all().order_by('-id')
+
+    def perform_create(self, serializer):
+        serializer.save(added_by=self.request.user)
+
+
+class UnitTypeFieldsView(viewsets.ModelViewSet):
+    serializer_class = UnitTypeFieldSerializer
+    queryset = UnitTypeField.objects.all().order_by('id')
+
+    def perform_create(self, serializer):
+        serializer.save(added_by=self.request.user)
+
+
+class TrackerTypesView(viewsets.ModelViewSet):
+    serializer_class = TrackerTypeSerializer
+    queryset = TrackerType.objects.all().order_by('-id')
+
+    def perform_create(self, serializer):
+        serializer.save(added_by=self.request.user)
+
+
+class SensorTypesView(viewsets.ModelViewSet):
+    serializer_class = SensorTypeSerializer
+    queryset = SensorType.objects.all().order_by('-id')
+
+    def perform_create(self, serializer):
+        serializer.save(added_by=self.request.user)
+
+
+class UnitGroupsView(viewsets.ModelViewSet):
+    serializer_class = UnitGroupSerializer
+
+    def get_queryset(self):
+        query_filter = {}
+        company_id = get_current_user(self.request, 'company_id', None)
+        if company_id:
+            query_filter['company__id'] = company_id
+        return UnitGroup.objects.filter(**query_filter).order_by('-id')
+    
+    def perform_create(self, serializer):
+        company_id = get_current_user(self.request, 'company_id', None)
+        serializer.save(company=Company.objects.filter(id=company_id).first(),added_by=self.request.user)
+
+
+class TrackersView(viewsets.ModelViewSet):
+    serializer_class = UnitTrackerSerializer
+
+    def get_queryset(self):
+        query_filter = {}
+        company_id = get_current_user(self.request, 'company_id', None)
+        if company_id:
+            query_filter['company__id'] = company_id
+        return UnitTracker.objects.filter(**query_filter).order_by('-id')
+    
+    def perform_create(self, serializer):
+        company_id = get_current_user(self.request, 'company_id', None)
+        serializer.save(company=Company.objects.filter(id=company_id).first(),added_by=self.request.user)
+
 '''
 class AssetView(viewsets.ModelViewSet):
     serializer_class = AssetSerializer
@@ -64,7 +126,7 @@ class UpdateLocationsView(APIView):
         asset = Asset.objects.get(id=asset_id)
         GPSData.objects.create(asset=asset, latitude=latitude, longitude=longitude, speed=speed)
 
-        return Response({'status': 'success'}, status=status.HTTP_400_BAD_REQUEST) '''
-    
+        return Response({'status': 'success'}, status=status.HTTP_400_BAD_REQUEST)
+'''   
 
        

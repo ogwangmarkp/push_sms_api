@@ -20,9 +20,9 @@ from systemrights import views as systemrights_views
 from companies import views as companies_views
 from users import views as user_views
 from curriculum import views as curriculum_views
-from assets import views as asset_views
+#from assets import views as asset_views
 from smsApp import views as sms_app_views
-
+from monitoring import views as monitoring_views
 router = DefaultRouter() 
 
 router.register(r'company-types', companies_views.CompanyTypesView, basename='CompanyTypes')
@@ -39,10 +39,16 @@ router.register(r'sms-list', sms_app_views.SMSListView, basename='send-sms')
 router.register(r'contact-groups', sms_app_views.ContactGroupsView, basename='contact-groups')
 router.register(r'file-list', sms_app_views.FileListView, basename='file-list')
 
+router.register(r'unit-types', monitoring_views.UnitTypesView, basename='unit-types')
+router.register(r'tracker-types', monitoring_views.TrackerTypesView, basename='tracker-types')
+router.register(r'unit-groups', monitoring_views.UnitGroupsView, basename='unit-groups')
+router.register(r'trackers', monitoring_views.TrackersView, basename='trackers')
+router.register(r'sensor-types', monitoring_views.SensorTypesView, basename='sensor-types')
+ 
 router.register(r'company-free-sms-award', sms_app_views.CompanyFreeSmsAwardView, basename='company-free-sms-award')
-router.register(r'assets', asset_views.AssetView, basename='assets')
+'''router.register(r'assets', asset_views.AssetView, basename='assets')
 router.register(r'asset-trackers', asset_views.AssetTrackerView, basename='asset-trackers')
-router.register(r'tracked-assets', asset_views.TrackedAssetView, basename='tracked-assets')
+router.register(r'tracked-assets', asset_views.TrackedAssetView, basename='tracked-assets')'''
 
 
 '''  router.register(r'courses', curriculum_views.CoursesViewSet, basename='course')
@@ -66,7 +72,7 @@ urlpatterns = [
     path('api/group-rights/', systemrights_views.GroupRightsView.as_view()),
     path('api/company-general-settings/', companies_views.GeneralSettingsView.as_view()),
     path('api/switch-company/', companies_views.SwitchCompany.as_view()),
-    path('api/update_gps_location/',asset_views.UpdateLocationsView.as_view()),
+    #path('api/update_gps_location/',asset_views.UpdateLocationsView.as_view()),
     path('api/send-sms/', sms_app_views.SendSMSApiView.as_view()), 
     path('api/trash-update-orders/', sms_app_views.TrashUpdateOrdersApiView.as_view()), 
     

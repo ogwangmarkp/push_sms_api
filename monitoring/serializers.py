@@ -1,5 +1,51 @@
 from rest_framework import serializers
 from .models import *
+
+
+class UnitTypeSerializer(serializers.ModelSerializer):
+
+    class Meta:
+        model = UnitType
+        fields = '__all__'
+
+
+class UnitTypeFieldSerializer(serializers.ModelSerializer):
+
+    class Meta:
+        model = UnitTypeField
+        fields = '__all__'
+
+
+class TrackerTypeSerializer(serializers.ModelSerializer):
+
+    class Meta:
+        model = TrackerType
+        fields = '__all__'
+
+
+class UnitGroupSerializer(serializers.ModelSerializer):
+    company = serializers.CharField(read_only=True)
+
+    class Meta:
+        model = UnitGroup
+        fields = '__all__'
+
+
+class UnitTrackerSerializer(serializers.ModelSerializer):
+    company = serializers.CharField(read_only=True)
+
+    class Meta:
+        model = UnitTracker
+        fields = '__all__'
+
+
+class SensorTypeSerializer(serializers.ModelSerializer):
+
+    class Meta:
+        model = SensorType
+        fields = '__all__'
+
+
 '''
 class AssetSerializer(serializers.ModelSerializer):
     id = serializers.CharField(read_only=True)

@@ -3,7 +3,7 @@ from django.utils import timezone
 from companies.models import *
 from django.conf import settings
 # Create your models here.
-
+'''
 class Asset(models.Model):
     label       = models.CharField(max_length=255)
     description = models.CharField(max_length=255, null=True, blank=True)
@@ -84,3 +84,5 @@ class NotificationSubscriber(models.Model):
     
     class Meta:
         db_table = 'public\".\"notification_subscriber' 
+
+'''
