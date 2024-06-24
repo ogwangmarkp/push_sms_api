@@ -2,6 +2,7 @@ from rest_framework import viewsets
 from rest_framework.filters import SearchFilter, OrderingFilter
 from django_filters.rest_framework import DjangoFilterBackend
 from django.contrib.auth import get_user_model
+from rest_framework.permissions import AllowAny
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status
@@ -71,6 +72,48 @@ class TrackersView(viewsets.ModelViewSet):
         company_id = get_current_user(self.request, 'company_id', None)
         serializer.save(company=Company.objects.filter(id=company_id).first(),added_by=self.request.user)
 
+class MUnitsView(viewsets.ModelViewSet):
+    serializer_class = MUnitSerializer
+
+    def get_queryset(self):
+        query_filter = {}
+        company_id = get_current_user(self.request, 'company_id', None)
+        if company_id:
+            query_filter['company__id'] = company_id
+        return MUnit.objects.filter(**query_filter).order_by('-id')
+    
+    def perform_create(self, serializer):
+        company_id = get_current_user(self.request, 'company_id', None)
+        serializer.save(company=Company.objects.filter(id=company_id).first(),added_by=self.request.user)
+
+class UnitSensorsView(viewsets.ModelViewSet):
+    serializer_class = UnitSensorSerializer
+
+    def get_queryset(self):
+        query_filter = {}
+        company_id = get_current_user(self.request, 'company_id', None)
+        if company_id:
+            query_filter['company__id'] = company_id
+        return UnitSensor.objects.filter(**query_filter).order_by('-id')
+    
+    def perform_create(self, serializer):
+        company_id = get_current_user(self.request, 'company_id', None)
+        serializer.save(company=Company.objects.filter(id=company_id).first(),added_by=self.request.user)
+
+
+class GPSDataAPIView(APIView):
+    permission_classes = [AllowAny]
+    
+    def post(self, request, format=None):
+        print("post request-----------------------------")
+        print("self.request.data --- raw_data\n",self.request.data)
+        return Response({"message":" initiated successfully"})
+    
+    def get(self,request, format=None):
+        print("get request-----------------------------")
+        print("self.request.data ----- --- raw_data\n",self.request.data)
+        return Response({"message":" initiated successfully"})
+    
 '''
 class AssetView(viewsets.ModelViewSet):
     serializer_class = AssetSerializer

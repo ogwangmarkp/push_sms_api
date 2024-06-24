@@ -44,7 +44,9 @@ router.register(r'tracker-types', monitoring_views.TrackerTypesView, basename='t
 router.register(r'unit-groups', monitoring_views.UnitGroupsView, basename='unit-groups')
 router.register(r'trackers', monitoring_views.TrackersView, basename='trackers')
 router.register(r'sensor-types', monitoring_views.SensorTypesView, basename='sensor-types')
- 
+router.register(r'm-units', monitoring_views.MUnitsView, basename='m-units')
+router.register(r'unit-sensors', monitoring_views.UnitSensorsView, basename='unit-sensors')
+
 router.register(r'company-free-sms-award', sms_app_views.CompanyFreeSmsAwardView, basename='company-free-sms-award')
 '''router.register(r'assets', asset_views.AssetView, basename='assets')
 router.register(r'asset-trackers', asset_views.AssetTrackerView, basename='asset-trackers')
@@ -82,6 +84,6 @@ urlpatterns = [
     path('api/sms-dashboard/', sms_app_views.smsDashBoardView.as_view()), 
     path('api/document/', sms_app_views.DocumentApiView.as_view()), 
     path('api/download-file/', sms_app_views.DownloadApiView.as_view()),  
-    
-]
+    path('api/update_gps_location/',monitoring_views.GPSDataAPIView.as_view()),
 
+]

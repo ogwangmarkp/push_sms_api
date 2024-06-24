@@ -46,6 +46,36 @@ class SensorTypeSerializer(serializers.ModelSerializer):
         fields = '__all__'
 
 
+class MUnitSerializer(serializers.ModelSerializer):
+    id = serializers.CharField(read_only=True)
+    added_by     = serializers.CharField(read_only=True)
+    user_account_name  = serializers.CharField(read_only=True)
+    company      = serializers.CharField(read_only=True)
+    company_name = serializers.CharField(read_only=True,source="company.name")
+    type_title = serializers.CharField(read_only=True,source="unit_type.title")
+
+    
+    def get_user_account_name(self, obj):
+        if obj.user_account:
+            return f'{obj.user_account.first_name} {obj.user_account.last_name}'
+        return ""
+
+    class Meta:
+        model = MUnit
+        fields = '__all__'
+
+class UnitSensorSerializer(serializers.ModelSerializer):
+    id = serializers.CharField(read_only=True)
+    added_by     = serializers.CharField(read_only=True)
+    company      = serializers.CharField(read_only=True)
+    company_name = serializers.CharField(read_only=True,source="company.name")
+    type_title = serializers.CharField(read_only=True,source="sensor_type.title")
+
+    class Meta:
+        model = UnitSensor
+        fields = '__all__'
+
+
 '''
 class AssetSerializer(serializers.ModelSerializer):
     id = serializers.CharField(read_only=True)
