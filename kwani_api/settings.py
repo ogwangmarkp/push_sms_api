@@ -30,21 +30,30 @@ SECRET_KEY = config('SECRET_KEY', default='')
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = config('DEBUG', default=True, cast=bool)
 
-ALLOWED_HOSTS = ['localhost', '127.0.0.1', '51.20.109.248','smsapi.tracesms.co']
+ALLOWED_HOSTS = ['localhost', '127.0.0.1',
+                 '51.20.109.248', 'smsapi.tracesms.co']
 
 # Application definition
-INSTALLED_APPS = [
+PRE_INSTALLED_APPS =[
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
     'django.contrib.sessions',
-    'django.contrib.messages',
+    'django.contrib.messages'
+]
+
+if config('IS_ASGI') == 'YES':
+    PRE_INSTALLED_APPS.append('daphne')
+
+CUSTOM_INSTALLED_APPS =[  
     'django.contrib.staticfiles',
     'rest_framework',
     'rest_framework.authtoken',
     'rest_framework_simplejwt',
     'django_filters',
     'corsheaders',
+    'channels',
+    'chat',
     'companies',
     'users',
     'systemrights',
@@ -55,6 +64,8 @@ INSTALLED_APPS = [
     'orders',
     'monitoring'
 ]
+
+INSTALLED_APPS = PRE_INSTALLED_APPS + CUSTOM_INSTALLED_APPS
 
 MIDDLEWARE = [
     'corsheaders.middleware.CorsMiddleware',
@@ -98,9 +109,17 @@ TEMPLATES = [
     },
 ]
 
-WSGI_APPLICATION = 'kwani_api.wsgi.application'
-
 AUTH_USER_MODEL = 'users.User'
+if config('IS_ASGI') != 'YES':
+    WSGI_APPLICATION = 'kwani_api.wsgi.application'
+else:
+    ASGI_APPLICATION = 'kwani_api.asgi.application'
+    CHANNEL_LAYERS = {
+        'default': {
+            'BACKEND': 'channels.layers.InMemoryChannelLayer',
+        },
+    }
+
 
 # Database
 # https://docs.djangoproject.com/en/3.2/ref/settings/#databases
@@ -120,18 +139,17 @@ DATABASES = {
 REST_FRAMEWORK = {
     'DEFAULT_PAGINATION_CLASS': 'kwani_api.pagination.CustomPageNumberPagination',
     'PAGE_SIZE': 25,
-    'DEFAULT_FILTER_BACKENDS': ('django_filters.rest_framework.DjangoFilterBackend' ,),
+    'DEFAULT_FILTER_BACKENDS': ('django_filters.rest_framework.DjangoFilterBackend',),
     'DEFAULT_AUTHENTICATION_CLASSES': (
-        #'rest_framework_jwt.authentication.JSONWebTokenAuthentication',   ---> Disable this when using CustomJSONWebTokenAuthentication
+        # 'rest_framework_jwt.authentication.JSONWebTokenAuthentication',   ---> Disable this when using CustomJSONWebTokenAuthentication
         'users.helper.CustomJWTAuthentication',
         'rest_framework.authentication.SessionAuthentication',
     ),
     'DEFAULT_PERMISSION_CLASSES': (
-    'rest_framework.permissions.IsAuthenticated',
-    'rest_framework.permissions.AllowAny',
+        'rest_framework.permissions.IsAuthenticated',
+        'rest_framework.permissions.AllowAny',
     )
-} 
-
+}
 
 
 # Password validation
@@ -179,7 +197,7 @@ STATIC_ROOT = os.path.join(BASE_DIR, 'static')
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 CORS_ORIGIN_WHITELIST = [
-     'http://localhost:3000'
+    'http://localhost:3000'
 ]
 
 AWS_ACCESS_KEY_ID = config('AWS_ACCESS_KEY_ID', default='')
@@ -189,12 +207,12 @@ AWS_S3_REGION_NAME = config('AWS_S3_REGION_NAME', default='')
 AWS_STORAGE_BUCKET_NAME = config('AWS_STORAGE_BUCKET_NAME', default='')
 
 QB_DB_SMS_URL = config('QB_DB_SMS_URL', default='')
-EGO_USERNAME = config('EGO_USERNAME', default='') 
-EGO_SMS_URL = config('EGO_SMS_URL', default='') 
-EGO_SENDER_ID = config('EGO_SENDER_ID', default='') 
-EGO_PASSWORD = config('EGO_PASSWORD', default='') 
+EGO_USERNAME = config('EGO_USERNAME', default='')
+EGO_SMS_URL = config('EGO_SMS_URL', default='')
+EGO_SENDER_ID = config('EGO_SENDER_ID', default='')
+EGO_PASSWORD = config('EGO_PASSWORD', default='')
 
-#Email Configurations
+# Email Configurations
 EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
 EMAIL_HOST = 'smtp.gmail.com'
 EMAIL_PORT = 587
@@ -205,6 +223,7 @@ EMAIL_HOST_PASSWORD = 'your_password'
 FILE_UPLOAD_DIR = os.path.join(BASE_DIR, 'uploaded-files')
 
 SIMPLE_JWT = {
-    'ACCESS_TOKEN_LIFETIME': datetime.timedelta(days=2),  # Example: Access token expires in 15 minutes
+    # Example: Access token expires in 15 minutes
+    'ACCESS_TOKEN_LIFETIME': datetime.timedelta(days=2),
     # Other settings...
 }

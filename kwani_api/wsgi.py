@@ -9,8 +9,15 @@ https://docs.djangoproject.com/en/3.2/howto/deployment/wsgi/
 
 import os
 
-from django.core.wsgi import get_wsgi_application
+import os
+from decouple import config
 
-os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'kwani_api.settings')
+if config('IS_ASGI') != 'YES':
+    from django.core.wsgi import get_wsgi_application
 
-application = get_wsgi_application()
+    os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'kwani_api.settings')
+
+    application = get_wsgi_application()
+else:
+    print("IS NOT ASGI")
+    application = None

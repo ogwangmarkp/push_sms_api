@@ -146,7 +146,7 @@ class UnitTracker(models.Model):
 
 class TrackedUnit(models.Model):
     unit = models.OneToOneField(
-        UnitTracker, on_delete=models.CASCADE, related_name='tracked_unit_unit')
+        MUnit, on_delete=models.CASCADE, related_name='tracked_unit_unit')
     tracker = models.OneToOneField(
         UnitTracker, on_delete=models.CASCADE, related_name='tracked_unit_unit_tracker')
     status = models.BooleanField(default=False)

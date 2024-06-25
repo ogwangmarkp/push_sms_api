@@ -84,6 +84,6 @@ urlpatterns = [
     path('api/sms-dashboard/', sms_app_views.smsDashBoardView.as_view()), 
     path('api/document/', sms_app_views.DocumentApiView.as_view()), 
     path('api/download-file/', sms_app_views.DownloadApiView.as_view()),  
-    path('',monitoring_views.GPSDataAPIView.as_view()),
+    path('api/gpsdata',monitoring_views.GPSDataAPIView.as_view()),
 
 ]

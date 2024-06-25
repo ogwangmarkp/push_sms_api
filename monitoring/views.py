@@ -3,6 +3,7 @@ from rest_framework.filters import SearchFilter, OrderingFilter
 from django_filters.rest_framework import DjangoFilterBackend
 from django.contrib.auth import get_user_model
 from rest_framework.permissions import AllowAny
+from datetime import datetime
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status
@@ -84,8 +85,29 @@ class MUnitsView(viewsets.ModelViewSet):
     
     def perform_create(self, serializer):
         company_id = get_current_user(self.request, 'company_id', None)
-        serializer.save(company=Company.objects.filter(id=company_id).first(),added_by=self.request.user)
+        tracker_id = self.request.data.get('tracker',None)
+        saved_unit = serializer.save(company=Company.objects.filter(id=company_id).first(),added_by=self.request.user)
+        if saved_unit:
+            TrackedUnit.objects.create(tracker_id=tracker_id, unit=saved_unit,status=True,added_by=self.request.user)
+    
+    def perform_update(self, serializer):
+        tracker_id = self.request.data.get('tracker',None)
+        saved_unit = serializer.save(last_updated = datetime.now(),updated_by=self.request.user)
+        
+        if saved_unit:
+            print("tracker_id ----",tracker_id)
+            tracked_unit = TrackedUnit.objects.filter(unit=saved_unit,status=True).first()
+            if tracked_unit:
+                tracked_unit.tracker = UnitTracker.objects.get(pk=tracker_id)
+                tracked_unit.updated_by = self.request.user
+                tracked_unit.status=True
+                tracked_unit.last_updated = datetime.now()
+                tracked_unit.save()
+            else:
+                TrackedUnit.objects.create(tracker_id=tracker_id, unit=saved_unit,status=True,added_by=self.request.user)
 
+
+        
 class UnitSensorsView(viewsets.ModelViewSet):
     serializer_class = UnitSensorSerializer
 
@@ -99,8 +121,8 @@ class UnitSensorsView(viewsets.ModelViewSet):
     def perform_create(self, serializer):
         company_id = get_current_user(self.request, 'company_id', None)
         serializer.save(company=Company.objects.filter(id=company_id).first(),added_by=self.request.user)
-
-
+        
+       
 class GPSDataAPIView(APIView):
     permission_classes = [AllowAny]
     

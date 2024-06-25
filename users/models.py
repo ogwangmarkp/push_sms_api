@@ -5,7 +5,7 @@ from django.utils import timezone
 from django.conf import settings
 from django.core.files.storage import FileSystemStorage
 from companies.models import *
-from django.contrib.postgres.fields import JSONField
+#from django.contrib.postgres.fields import JSONField
 from companies.models import *
 from systemrights.models import *
 
@@ -60,7 +60,7 @@ class UserSession(models.Model):
     user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name='loggedinuser')
     session_token         = models.TextField(null=True, blank=True)
     is_switched           = models.BooleanField(default=False)
-    data = JSONField( null=False, blank=False)
+    data = models.JSONField( null=False, blank=False)
 
     class Meta:
         db_table = 'public\".\"user_session_management'
