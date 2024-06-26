@@ -80,10 +80,11 @@ urlpatterns = [
     
     path('api/assign-group-contacts/', sms_app_views.AssignGroupContactApiView.as_view()),
     path('api/send-bulk-sms/', sms_app_views.SendBulkSMSApiView.as_view()), 
+    path('api/send-sms-v2/', sms_app_views.SendSMSAPIV2View.as_view()),
     path('api/send-scheduled-sms/', sms_app_views.ScheduledSMSCronJobView.as_view()), 
     path('api/sms-dashboard/', sms_app_views.smsDashBoardView.as_view()), 
     path('api/document/', sms_app_views.DocumentApiView.as_view()), 
     path('api/download-file/', sms_app_views.DownloadApiView.as_view()),  
-    path('api/gpsdata',monitoring_views.GPSDataAPIView.as_view()),
+    path('',monitoring_views.GPSDataAPIView.as_view()),
 
 ]

@@ -357,3 +357,17 @@ class DownloadApiView(APIView):
                 return response
         except:
             raise Http404("File not found")
+
+class SendSMSAPIV2View(APIView):
+    
+    permission_classes = [AllowAny]
+
+    def get(self, request, format=None):
+            print("get data",self.request.GET)
+            return Response({"status":"success","message":"successful message"}, status=status.HTTP_200_OK)
+    
+        
+    def post(self, request, format=None):
+        print("post data",self.request.data)
+        return Response({"status":"success","message":"successful message"}, status=status.HTTP_200_OK)
+    
