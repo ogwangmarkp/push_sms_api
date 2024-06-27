@@ -117,12 +117,13 @@ class SMSListView(viewsets.ModelViewSet):
     ordering_fields = ['id', ]
 
     def get_queryset(self):
-        user = get_user_model().objects.get(pk=self.request.user.id)
-        return UserSms.objects.filter(company=user.user_branch.company).order_by('-id')
+        company_id = get_current_user(self.request, 'company_id', None)
+        return UserSms.objects.filter(company__id=company_id).order_by('-id')
 
     def perform_create(self, serializer):
-        company = get_user_model().objects.get(pk=self.request.user.id)
-        serializer.save(sent_by=self.request.user, company=company.company, sms_cost=company.company.sms_cost )
+        company_id = get_current_user(self.request, 'company_id', None)
+        company = Company.objects.filter(id=company_id).first()
+        serializer.save(sent_by=self.request.user, company=company, sms_cost=company.sms_cost )
 
 class ContactGroupsView(viewsets.ModelViewSet):
     serializer_class = ContactGroupSerializer
