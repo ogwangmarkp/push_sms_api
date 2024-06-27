@@ -17,12 +17,7 @@ import os
 
 class SmsRequestView(viewsets.ModelViewSet):
     serializer_class = SmsRequestSerializer
-    queryset = SmsRequest.objects.all()
-    filter_backends = (SearchFilter, OrderingFilter, DjangoFilterBackend, )
-    filterset_fields = ['id', 'status']
-    search_fields = ('id')
-    ordering_fields = ['id', ]
-    
+
     def get_queryset(self):
         process_type = self.request.GET.get('process_type', None)
         status       = self.request.GET.get('status', None)
@@ -37,7 +32,7 @@ class SmsRequestView(viewsets.ModelViewSet):
             query_filter['status'] = status
         if process_type == 'fetch-single':
             company_id = get_current_user(self.request, 'company_id', None)
-            query_filter['company_id__id'] = company_id
+            query_filter['company__id'] = company_id
         return SmsRequest.objects.filter(**query_filter).order_by('-id')
     
     
@@ -111,14 +106,17 @@ class CompanyFreeSmsAwardView(viewsets.ModelViewSet):
 # Create your views here.
 class SMSListView(viewsets.ModelViewSet):
     serializer_class = UserSmsSerializer
-    filter_backends = (SearchFilter, OrderingFilter, DjangoFilterBackend, )
-    filterset_fields = ['id', 'sending_mode']
-    search_fields = ('id')
-    ordering_fields = ['id', ]
 
     def get_queryset(self):
         company_id = get_current_user(self.request, 'company_id', None)
-        return UserSms.objects.filter(company__id=company_id).order_by('-id')
+        start        = self.request.GET.get('s', None)
+        end          = self.request.GET.get('e', None)
+        query_filter = {"company__id":company_id}
+        if start:
+            query_filter['date_added__date__gte'] = start 
+        if end:
+            query_filter['date_added__date__lte'] = end 
+        return UserSms.objects.filter(**query_filter).order_by('-id')
 
     def perform_create(self, serializer):
         company_id = get_current_user(self.request, 'company_id', None)

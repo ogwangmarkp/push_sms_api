@@ -76,12 +76,12 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
-    'monitoring.middlewares.RequestLoggingMiddleware',
+    #'monitoring.middlewares.RequestLoggingMiddleware',
 ]
 
 # settings.py
 
-LOGGING = {
+''' LOGGING = {
     'version': 1,
     'disable_existing_loggers': False,
     'handlers': {
@@ -105,7 +105,7 @@ LOGGING = {
             'propagate': True,
         },
     },
-}
+}'''
 
 CORS_ORIGIN_ALLOW_ALL = True
 

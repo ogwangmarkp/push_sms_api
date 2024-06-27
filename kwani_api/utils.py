@@ -1,5 +1,7 @@
 from users.serializers import GetFullUserSerializer,UserPermissionsSerializer,UserAssignedGroupSerializer
 from companies.models import *
+from systemrights.models import RoleComponent
+from systemrights.serializers import RoleComponentSerializer
 from users.models import UserSession, UserPermissions, UserAssignedGroup
 from rest_framework.pagination import PageNumberPagination
 from datetime import datetime
@@ -25,10 +27,18 @@ def custom_jwt_response_handler(token, user=None, request=None):
         company_settings_list[company_setting.setting_key] = company_setting.setting_value
     
     group_name = ''
-    user_group = UserAssignedGroup.objects.filter(user=user).first()
+    permissions = []
+    user_group = UserAssignedGroup.objects.filter(user=user,is_active=True,group__is_active=True).first()
     if user_group:
         group_name = user_group.group.name 
-
+        permission_query = {
+            "is_active":True,
+            "user_group__id":user_group.id,
+            "company_component__is_active":True,
+            "company_component__system_component__is_active":True
+        }
+        permission_queryset = RoleComponent.objects.filter(**permission_query)
+        permissions  = RoleComponentSerializer(permission_queryset,many=True).data
     company = user.user_branch.company
     return {
         'logged_in_time' : datetime.now().strftime('%Y-%m-%d %H:%M'),
@@ -51,7 +61,7 @@ def custom_jwt_response_handler(token, user=None, request=None):
             "address":user.user_branch.address
         },
         "company_settings":company_settings_list,
-        "permissions":UserPermissionsSerializer(UserPermissions.objects.filter(is_feature_active=True,is_company_comp_active=True,is_group_active=True,is_role_component_active=True).all(), many=True).data, 
+        "permissions":permissions,
         "profile_url":user.profile_url
     }
  
@@ -103,10 +113,18 @@ def jwt_switched_session_response_handler(token, user):
         company_settings_list[company_setting.setting_key] = company_setting.setting_value
     
     group_name = ''
-    user_group = UserAssignedGroup.objects.filter(user=user).first()
+    permissions = []
+    user_group = UserAssignedGroup.objects.filter(user=user,is_active=True,group__is_active=True).first()
     if user_group:
         group_name = user_group.group.name 
-
+        permission_query = {
+            "is_active":True,
+            "user_group__id":user_group.id,
+            "company_component__is_active":True,
+            "company_component__system_component__is_active":True
+        }
+        permission_queryset = RoleComponent.objects.filter(**permission_query)
+        permissions  = RoleComponentSerializer(permission_queryset,many=True).data
     company = user.user_branch.company
 
     return {
@@ -129,7 +147,7 @@ def jwt_switched_session_response_handler(token, user):
             "address":user.user_branch.address
         },
         "company_settings":company_settings_list,
-        "permissions":UserPermissionsSerializer(UserPermissions.objects.filter(is_feature_active=True,is_company_comp_active=True,is_group_active=True,is_role_component_active=True).all(), many=True).data, 
+        "permissions":permissions, #UserPermissionsSerializer(UserPermissions.objects.filter(is_feature_active=True,is_company_comp_active=True,is_group_active=True,is_role_component_active=True).all(), many=True).data, 
         "profile_url":user.profile_url
     }
 
