@@ -357,7 +357,7 @@ class GroupRightsView(APIView):
         rightid    = request_data.get('rightid') 
         is_active  = request_data.get('is_active')
         user_group = UserGroup.objects.get(id=groupid)
-        right      = CompanyComponent.objects.filter(id=rightid).first()
+        right      = CompanyComponent.objects.filter(system_component__id=rightid).first()
         
         if right:
             role_component = RoleComponent.objects.filter(user_group=user_group,company_component=right).first()
