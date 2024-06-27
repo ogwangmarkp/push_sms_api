@@ -51,10 +51,10 @@ def custom_jwt_response_handler(token, user=None, request=None):
             "address":user.user_branch.address
         },
         "company_settings":company_settings_list,
-        "permissions":UserPermissionsSerializer(UserPermissions.objects.filter(user_id=user.id,is_feature_active=True,is_company_comp_active=True,is_group_active=True,is_role_component_active=True,is_assigned_group_active=True).all(), many=True).data, 
-        "profile_url":None #user.user_staff.profile_url
+        "permissions":UserPermissionsSerializer(UserPermissions.objects.filter(is_feature_active=True,is_company_comp_active=True,is_group_active=True,is_role_component_active=True).all(), many=True).data, 
+        "profile_url":user.profile_url
     }
-
+ 
 def get_current_user(request, session_key = None, default=None):
     user_id = request.user.id
     user_session = None
@@ -129,8 +129,8 @@ def jwt_switched_session_response_handler(token, user):
             "address":user.user_branch.address
         },
         "company_settings":company_settings_list,
-        "permissions":UserPermissionsSerializer(UserPermissions.objects.filter(user_id=user.id,is_feature_active=True,is_company_comp_active=True,is_group_active=True,is_role_component_active=True,is_assigned_group_active=True).all(), many=True).data, 
-        "profile_url":None#user.user_staff.profile_url
+        "permissions":UserPermissionsSerializer(UserPermissions.objects.filter(is_feature_active=True,is_company_comp_active=True,is_group_active=True,is_role_component_active=True).all(), many=True).data, 
+        "profile_url":user.profile_url
     }
 
 def generate_random_string(length=50):

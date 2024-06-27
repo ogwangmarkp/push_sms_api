@@ -75,16 +75,12 @@ class UserPermissions(models.Model):
     type          =  models.CharField(max_length=255)
     key           =  models.CharField(max_length=255)
     company_id    = models.CharField(max_length=255)
-    date_added    = models.CharField(max_length=255)
-    user_id       = models.CharField(max_length=255)
-    assigned_by_id  = models.CharField(max_length=255)
     name            = models.CharField(max_length=255)
     group_desc      = models.CharField(max_length=255)
     is_group_active = models.CharField(max_length=255)
     is_feature_active        = models.CharField(max_length=255)
     is_company_comp_active   = models.CharField(max_length=255)
     is_role_component_active = models.CharField(max_length=255)
-    is_assigned_group_active = models.CharField(max_length=255)
 
     class Meta:
         managed = False
