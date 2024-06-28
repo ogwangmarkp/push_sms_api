@@ -61,7 +61,7 @@ def sendBulkSMSData(recipients, message, is_scheduled, scheduled_time, user, sen
              sms_cost = general_setting.setting_value
 
         sending_mode = 'bulk' if len(recipients) > 1 else 'single'
-
+        
         for recipient in recipients:
                 phone_number = str(recipient['phone_number'])
                 phone_number = f'256{phone_number[-9:]}'
@@ -71,7 +71,7 @@ def sendBulkSMSData(recipients, message, is_scheduled, scheduled_time, user, sen
                 if contact is None:
                     contact = User.objects.create(
                         username=phone_number, first_name=recipient['name'], user_branch=user.user_branch, gender='O', phone_number=phone_number, user_type='Contact', user_added_by=user.id)
-
+ 
                 smsData = {
                     'user': user,
                     'send_type': send_type,
@@ -100,6 +100,9 @@ def send_sms(smsData):
         contact = User.objects.filter(
             Q(phone_number__icontains=phone_number[-9:])).first()
         sms_tran = None
+        
+        if not scheduled_time:
+             scheduled_time = timezone.now()
 
         if contact is None:
             contact = User.objects.create(username=phone_number, first_name=phone_number, user_branch=user.user_branch,
@@ -115,6 +118,8 @@ def send_sms(smsData):
                     'ACTIVE_SMS_PROVIDER'), sending_mode=sending_mode, telephone=phone_number, status='pending', company=user.user_branch.company, sent_by=user, recieved_by=contact)
 
         if sms_tran:
+            print("message saved----")
+            
             if config('ACTIVE_SMS_PROVIDER') == 'EGO':
                 data = {'method': 'SendSms',
                         'userdata': {
@@ -137,7 +142,7 @@ def send_sms(smsData):
                     sms_tran.status = 'failed'
                     sms_tran.save() 
 
-
+            
 def schedule_sms(smsData):
         message = smsData['message']
         sms_cost = smsData['sms_cost']
@@ -146,6 +151,10 @@ def schedule_sms(smsData):
         is_scheduled = smsData['is_scheduled']
         scheduled_time = smsData['scheduled_time']
         sending_mode = smsData['sending_mode']
+
+        if not scheduled_time:
+            scheduled_time = timezone.now()
+
         contact = User.objects.filter(
             Q(phone_number__icontains=phone_number[-9:])).first()
 

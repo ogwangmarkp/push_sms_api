@@ -372,10 +372,8 @@ class SendSMSAPIV2View(APIView):
         message    = ''
         is_scheduled  = False 
         scheduled_time = False
-        #user_app_api = UserAPIApp.objects.filter(app_key = access_key).first()
-        user_app_api = UserAPIApp.objects.first()
-        print("access_key",access_key)
-        print("access_keys",list(UserAPIApp.objects.all().values_list("app_key")))
+        user_app_api = UserAPIApp.objects.filter(app_key = access_key).first()
+        
         if request.data.items():
             for key, value in request.data.items():
                 message = f"{key}={value}"
