@@ -371,10 +371,16 @@ class SendSMSAPIV2View(APIView):
     
         
     def post(self, request, format=None):
+        print("get2 data",self.request.GET)
         print("post data",self.request.data)
+        text_body = ''
+        for key, value in self.request.data.items():
+            text_body = f"Key: {key}, Value: {value}"
+
         directory_path = settings.FILE_UPLOAD_DIR + f'/files/'
         filename = f'{directory_path}output.txt'
         with open(filename, 'a') as file:
             file.write(str(self.request.data)+ "\n")
+            file.write(text_body+ "\n")
         return Response({"status":"success","message":"successful message"}, status=status.HTTP_200_OK)
     
