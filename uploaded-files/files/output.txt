@@ -1,11 +1,1 @@
-good=
-{'status': 'success', 'message': 'successful message'}
-<QueryDict: {'good morning': ['']}>
-<QueryDict: {'my unique message': ['']}>
-good=
-<QueryDict: {'cool staff only': ['']}>
-good=
-<QueryDict: {'"UAN 861U violated speed limitations. At 28.06.2024 12:35:14 it moved with speed 33 km/h near \'Bwindi Road, Kisoro, Western Region': ['']}>
-good=
-<QueryDict: {'mdddddd': ['']}>
-Key: mdddddd, Value: 
+UAX 285Y violated speed limitations. At 28.06.2024 14:22:06 it moved with speed 12 km/h near 'Namagusa, Kibaale, Western Region, Uganda'.(http://maps.google.com/?q=0.783650,30.902707)

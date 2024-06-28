@@ -11,6 +11,7 @@ from .helper import *
 from kwani_api.utils import get_current_user
 import threading
 from users.permissions import *
+from users.models import UserAPIApp
 from .serializers import *
 from .models import *
 import os
@@ -362,25 +363,52 @@ class SendSMSAPIV2View(APIView):
     permission_classes = [AllowAny]
 
     def get(self, request, format=None):
-            print("get data",self.request.GET)
-            directory_path = settings.FILE_UPLOAD_DIR + f'/files/'
-            filename = f'{directory_path}output.txt'
-            with open(filename, 'a') as file:
-                file.write(self.request.GET.urlencode() + "\n")
-            return Response({"status":"success","message":"successful message"}, status=status.HTTP_200_OK)
+            return Response({}, status=status.HTTP_200_OK)
     
-        
     def post(self, request, format=None):
-        print("get2 data",self.request.GET)
-        print("post data",self.request.data)
-        text_body = ''
-        for key, value in self.request.data.items():
-            text_body = f"Key: {key}, Value: {value}"
+        access_key = self.request.GET.get('access_key', None)  
+        recipients = self.request.GET.get('numbers', None)  
+        send_type  = 'api'         
+        message    = ''
+        is_scheduled  = False 
+        scheduled_time = False
+        user_app_api = UserAPIApp.objects.filter(app_key = access_key).first()
+        
+        if request.data.items():
+            for key, value in request.data.items():
+                message = f"{key}={value}"
+
+        if not user_app_api:
+            return Response({"status":"failed","message":"Invalid access key"}, status=status.HTTP_200_OK)
+        
+        if not recipients:
+            return Response({"status":"failed","message":"Missing sms recipients"}, status=status.HTTP_200_OK)
+        
+        if not message:
+            return Response({"status":"failed","message":"Missing message"}, status=status.HTTP_200_OK)
+       
+        recipients = recipients.split(',')
+        user = user_app_api.registered_by
 
         directory_path = settings.FILE_UPLOAD_DIR + f'/files/'
         filename = f'{directory_path}output.txt'
         with open(filename, 'a') as file:
-            file.write(str(self.request.data)+ "\n")
-            file.write(text_body+ "\n")
+            file.write(message+ "\n")
+
+        balance = get_account_sms_balance(user.user_branch.company)
+
+        sms_cost = 50
+        general_setting   = CompanySetting.objects.filter(company_setting=user.user_branch.company,setting_key='sms_unit_cost').first()
+        if general_setting:
+             sms_cost = float(general_setting.setting_value)
+        
+        if balance == 0:
+            return Response({"message":"Insufficient balance"}, status=status.HTTP_200_OK)
+
+        if (len(recipients) * float(sms_cost)) > balance:
+            return Response({"message":"Insufficient balance to send all messages"}, status=status.HTTP_200_OK) 
+        
+        send_bulk_sms = threading.Thread(target=sendSMSData, args=(recipients,message,is_scheduled,scheduled_time,user,send_type,))
+        send_bulk_sms.start()
         return Response({"status":"success","message":"successful message"}, status=status.HTTP_200_OK)
     
